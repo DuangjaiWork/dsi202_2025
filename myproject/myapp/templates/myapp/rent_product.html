@@ -1,19 +1,19 @@
-<!-- /myproject/myapp/templates/myapp/rent_bike.html
+<!-- /myproject/myapp/templates/myapp/rent_bike.html -->
 {% extends 'myapp/base.html' %}
-{% block title %}Rent {{ bike.name }}{% endblock %}
+{% block title %}Rent {{ product.name }}{% endblock %}
 {% block content %}
-    <h1 class="text-3xl font-bold text-gray-800 mb-6">Rent {{ bike.name }}</h1>
+    <h1 class="text-3xl font-bold text-gray-800 mb-6">Rent {{ product.name }}</h1>
     <div class="bg-white p-6 rounded shadow max-w-md">
-        <p class="text-lg text-gray-700 mb-4">Confirm to rent <strong>{{ bike.name }}</strong> at ${{ bike.hourly_rate }}/hr.</p>
-        {% if bike.is_available %}
+        <p class="text-lg text-gray-700 mb-4">Confirm to rent <strong>{{ product.name }}</strong> at ${{ product.monthly_rate }}/month.</p>
+        {% if product.is_available %}
             <form method="post" class="flex flex-col gap-4">
                 {% csrf_token %}
                 {{ form.as_p }}
                 <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition">Confirm Rental</button>
             </form>
         {% else %}
-            <p class="text-red-600">This bike is currently unavailable.</p>
+            <p class="text-red-600">This product is currently unavailable.</p>
         {% endif %}
-        <a href="{% url 'bike_detail' bike.pk %}" class="inline-block mt-4 text-blue-600 hover:underline">Back to Bike Details</a>
+        <a href="{% url 'product_detail' product.pk %}" class="inline-block mt-4 text-blue-600 hover:underline">Back to product Details</a>
     </div>
-{% endblock %} -->
+{% endblock %}

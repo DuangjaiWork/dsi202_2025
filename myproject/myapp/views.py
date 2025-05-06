@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.views.generic import ListView, DetailView, CreateView
 from .models import Product, Rental
 from django.db.models import Q
+from .forms import RentalForm
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 
@@ -33,5 +34,17 @@ class ProductDetailView(DetailView):
 
 class RentProductView(LoginRequiredMixin, CreateView):
     model = Rental
+    form_class = RentalForm
     template_name = 'myapp/rent_product.html'
     success_url = reverse_lazy('product_list')  # Redirect after successful rental
+
+    def form_valid(self, form):
+        # Set the user and bike before saving
+        form.instance.user = self.request.user
+        form.instance.product = Product.objects.get(pk=self.kwargs['pk'])
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['product'] = Product.objects.get(pk=self.kwargs['pk'])
+        return context
