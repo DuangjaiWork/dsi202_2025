@@ -6,6 +6,9 @@ from .forms import RentalForm
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 
+from rest_framework import generics
+from .serializers import ProductSerializer
+
 # Home Page (FBV)
 def home(request):
     return render(request, 'myapp/home.html')
@@ -48,3 +51,12 @@ class RentProductView(LoginRequiredMixin, CreateView):
         context = super().get_context_data(**kwargs)
         context['product'] = Product.objects.get(pk=self.kwargs['pk'])
         return context
+    
+# New API Views
+class ProductListCreateAPIView(generics.ListCreateAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+
+class ProductRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
