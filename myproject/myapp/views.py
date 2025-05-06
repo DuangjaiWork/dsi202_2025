@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.views.generic import ListView, DetailView, CreateView
 from .models import Product, Rental
-from django.db.models import Q
+from django.db.models import Q, Sum
 from .forms import RentalForm
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -60,3 +60,24 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):
 class ProductRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+
+def dashboard(request):
+    # Product statistics
+    total_products = Product.objects.count()
+    available_products = Product.objects.filter(is_available=True).count()
+    unavailable_products = total_products - available_products
+
+    # Rental statistics
+    total_rentals = Rental.objects.count()
+    total_revenue = Rental.objects.filter(end_date__isnull=False).aggregate(total=Sum('total_fee'))['total'] or 0.00
+    recent_rentals = Rental.objects.order_by('-start_date')[:5]
+
+    context = {
+        'total_products': total_products,
+        'available_products': available_products,
+        'unavailable_products': unavailable_products,
+        'total_rentals': total_rentals,
+        'total_revenue': total_revenue,
+        'recent_rentals': recent_rentals,
+    }
+    return render(request, 'myapp/dashboard.html', context)

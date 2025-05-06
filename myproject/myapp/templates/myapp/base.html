@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Product Rental{% endblock %}</title>
+    <title>{% block title %}Rental{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 font-sans">
@@ -12,12 +12,15 @@
     <header class="bg-blue-600 text-white p-4 shadow">
         <div class="container mx-auto flex justify-between items-center">
             <h1 class="text-2xl font-bold">
-                <a href="{% url 'home' %}" class="hover:text-gray-200 transition">Product Rental</a>
+                <a href="{% url 'home' %}" class="hover:text-gray-200 transition">Rental</a>
             </h1>
             <nav>
                 <ul class="flex space-x-6">
                     <li><a href="{% url 'home' %}" class="hover:text-gray-200 transition">Home</a></li>
                     <li><a href="{% url 'product_list' %}" class="hover:text-gray-200 transition">Products</a></li>
+                    {% if user.is_authenticated %}
+                        <li><a href="{% url 'dashboard' %}" class="hover:text-gray-200 transition">Dashboard</a></li>
+                    {% endif %}
                 </ul>
             </nav>
         </div>
