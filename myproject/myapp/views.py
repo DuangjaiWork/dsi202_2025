@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect, get_object_or_404
 from django.views.generic import ListView, DetailView, CreateView
-from .models import Product, Rental, Category, Favorite
+from .models import Product, Rental, Category, Favorite, Cart
 from django.db.models import Q, Sum
 from .forms import RentalForm
 from django.urls import reverse_lazy
@@ -14,6 +14,7 @@ from django.contrib import messages
 def home(request):
     return render(request, 'myapp/home.html')
 
+# myapp/views.py (Update ProductListView)
 class ProductListView(ListView):
     model = Product
     template_name = 'myapp/product_list.html'
@@ -51,6 +52,11 @@ class ProductListView(ListView):
         context['categories'] = Category.objects.all()
         context['selected_category'] = self.request.GET.get('category', '')
         context['selected_sort'] = self.request.GET.get('sort', '')
+        # Add user's cart items to context
+        if self.request.user.is_authenticated:
+            context['user_cart'] = Cart.objects.filter(user=self.request.user).values_list('product_id', flat=True)
+        else:
+            context['user_cart'] = []
         return context
     
 # View to toggle favorite status
@@ -75,6 +81,29 @@ class FavoriteListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         return Favorite.objects.filter(user=self.request.user).order_by('-created_at')
+    
+# View to add/remove items from cart
+@login_required
+def toggle_cart(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    cart_item, created = Cart.objects.get_or_create(user=request.user, product=product)
+    
+    if created:
+        messages.success(request, f"{product.name} added to cart.")
+    else:
+        cart_item.delete()
+        messages.success(request, f"{product.name} removed from cart.")
+    
+    return redirect(request.META.get('HTTP_REFERER', 'product_list'))
+
+# View to display cart
+class CartListView(LoginRequiredMixin, ListView):
+    model = Cart
+    template_name = 'myapp/cart.html'
+    context_object_name = 'cart_items'
+
+    def get_queryset(self):
+        return Cart.objects.filter(user=self.request.user).order_by('-created_at')
 
 class ProductDetailView(DetailView):
     model = Product

@@ -1,4 +1,4 @@
-<!-- /myproject/myapp/templates/myapp/base.html -->
+<!-- myapp/templates/myapp/base.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -47,6 +47,11 @@
                         <a href="{% url 'favorite_list' %}" class="text-[#bb1615] hover:text-[#ff8da1] transition duration-300 flex items-center text-3xl">
                             <i class="fas fa-heart mr-2 text-4xl"></i>
                         </a>                          
+                    </li>
+                    <li>
+                        <a href="{% url 'cart_list' %}" class="text-[#009aa6] hover:text-[#4db8a4] transition duration-300 flex items-center text-3xl">
+                            <i class="fas fa-shopping-cart mr-2 text-4xl"></i>
+                        </a>
                     </li>
                     <li>
                       <a href="{% url 'dashboard' %}" class="bg-[#4db8a4] hover:bg-[#155c94] text-white px-4 py-2 rounded-xl transition duration-300">

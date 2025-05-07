@@ -22,7 +22,7 @@
     <!-- Search and Filter Section -->
     <section class="mb-10">
         <div class="relative text-center my-20">
-          <h1 class="text-4xl md:text-5xl font-extrabold text-[#000000]  rounded-lg py-4 px-8 inline-block shadow-lg transform transition-all duration-300 hover:shadow-2xl hover:scale-105 animate-fade-in">
+          <h1 class="text-4xl md:text-5xl font-extrabold text-[#000000] rounded-lg py-4 px-8 inline-block shadow-lg transform transition-all duration-300 hover:shadow-2xl hover:scale-105 animate-fade-in">
             Available Medical Equipment
             <span class="block w-24 h-1 bg-[#009aa6] mx-auto mt-3 rounded-full"></span>
           </h1>
@@ -75,20 +75,28 @@
     <!-- Product Grid -->
     <section id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-10">
         {% for product in products %}
-          <div class="block bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 flex flex-col">
-            <!-- Favorite Button -->
-            {% if user.is_authenticated %}
-                <form action="{% url 'toggle_favorite' product.pk %}" method="post" class="absolute top-2 right-2" id="favorite-form-{{ product.pk }}">
-                    {% csrf_token %}
-                    <button type="submit" class="focus:outline-none" onclick="redirectToFavoritesPage(event)">
-                    {% if product in user.favorite_set.all %}
-                        <i class="fas fa-heart text-red-500 text-2xl"></i>
-                    {% else %}
-                        <i class="far fa-heart text-gray-500 text-2xl hover:text-red-500 transition-colors duration-200"></i>
-                    {% endif %}
-                    </button>
-                </form>
-                {% endif %}
+          <div class="block bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 flex flex-col relative">
+            <!-- Favorite and Cart Buttons (only if not in cart) -->
+            {% if user.is_authenticated and product not in user.cart_set.all %}
+              <!-- Favorite Button -->
+              <form action="{% url 'toggle_favorite' product.pk %}" method="post" class="absolute top-2 right-2" id="favorite-form-{{ product.pk }}">
+                {% csrf_token %}
+                <button type="submit" class="focus:outline-none">
+                  {% if product in user.favorite_set.all %}
+                    <i class="fas fa-heart text-red-500 text-2xl"></i>
+                  {% else %}
+                    <i class="far fa-heart text-gray-500 text-2xl hover:text-red-500 transition-colors duration-200"></i>
+                  {% endif %}
+                </button>
+              </form>
+              <!-- Add to Cart Button -->
+              <form action="{% url 'toggle_cart' product.pk %}" method="post" class="absolute top-10 right-2">
+                {% csrf_token %}
+                <button type="submit" class="focus:outline-none">
+                  <i class="fas fa-cart-plus text-gray-500 text-2xl hover:text-[#009aa6] transition-colors duration-200"></i>
+                </button>
+              </form>
+            {% endif %}
             <a href="{% url 'product_detail' product.pk %}" class="flex flex-col flex-grow">
               {% if product.image %}
                 <div class="aspect-w-1 aspect-h-1 w-full mb-4">
@@ -133,7 +141,7 @@
                 href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}{% if selected_category %}category={{ selected_category }}&{% endif %}{% if selected_sort %}sort={{ selected_sort }}&{% endif %}page={{ page_obj.previous_page_number }}"
                 class="px-4 py-2 bg-[#1f2937] text-white rounded-full hover:bg-[#155c94] transition-all duration-300 transform hover:scale-110 shadow-md text-xl"
             >
-                &lt;
+                <
             </a>
             {% endif %}
 
@@ -146,7 +154,7 @@
                 href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}{% if selected_category %}category={{ selected_category }}&{% endif %}{% if selected_sort %}sort={{ selected_sort }}&{% endif %}page={{ page_obj.next_page_number }}"
                 class="px-4 py-2 bg-[#1f2937] text-white rounded-full hover:bg-[#155c94] transition-all duration-300 transform hover:scale-110 shadow-md text-xl"
             >
-                &gt;
+                >
             </a>
             {% endif %}
         </div>
@@ -164,4 +172,3 @@
   }
 </style>
 {% endblock %}
-
