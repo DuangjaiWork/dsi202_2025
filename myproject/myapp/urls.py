@@ -1,7 +1,7 @@
 # /myproject/myapp/urls.py
 from django.urls import path
 from .views import (
-    home, ProductListView, ProductDetailView, RentProductView, ProductListCreateAPIView, ProductRetrieveUpdateAPIView, dashboard
+    home, ProductListView, ProductDetailView, RentProductView, ProductListCreateAPIView, ProductRetrieveUpdateAPIView, dashboard, toggle_favorite, FavoriteListView
 )
 
 urlpatterns = [
@@ -13,4 +13,6 @@ urlpatterns = [
     path('dashboard/', dashboard, name='dashboard'),
     path('api/products/', ProductListCreateAPIView.as_view(), name='product_api_list_create'),
     path('api/products/<int:pk>/', ProductRetrieveUpdateAPIView.as_view(), name='product_api_retrieve_update'),
+    path('favorite/toggle/<int:product_id>/', toggle_favorite, name='toggle_favorite'),
+    path('favorites/', FavoriteListView.as_view(), name='favorite_list'),
 ]

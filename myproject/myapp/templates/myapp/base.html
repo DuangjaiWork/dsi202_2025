@@ -32,36 +32,41 @@
             
             <nav>
                 <ul class="flex space-x-4 items-center">
+                  <li>
+                    <a href="{% url 'home' %}" class="text-black hover:text-[#155c94] transition duration-300">
+                      Home
+                    </a>
+                  </li>
+                  <li>
+                    <a href="{% url 'product_list' %}" class="text-black hover:text-[#155c94] transition duration-300">
+                      Products
+                    </a>
+                  </li>
+                  {% if user.is_authenticated %}
                     <li>
-                        <a href="{% url 'home' %}" class="text-black hover:text-[#155c94] transition duration-300">
-                            Home
-                        </a>
+                        <a href="{% url 'favorite_list' %}" class="text-[#bb1615] hover:text-[#ff8da1] transition duration-300 flex items-center text-3xl">
+                            <i class="fas fa-heart mr-2 text-4xl"></i>
+                        </a>                          
                     </li>
                     <li>
-                        <a href="{% url 'product_list' %}" class="text-black hover:text-[#155c94] transition duration-300">
-                            Products
-                        </a>
-                    </li>
-                    {% if user.is_authenticated %}
-                    <li>
-                        <a href="{% url 'dashboard' %}" class="bg-[#4db8a4] hover:bg-[#155c94] text-white px-4 py-2 rounded-xl transition duration-300">
-                            Dashboard
-                        </a>
+                      <a href="{% url 'dashboard' %}" class="bg-[#4db8a4] hover:bg-[#155c94] text-white px-4 py-2 rounded-xl transition duration-300">
+                        Dashboard
+                      </a>
                     </li>
                     <li>
-                        <a href="{% url 'account_logout' %}" class="bg-[#4db8a4] hover:bg-[#155c94] text-white px-4 py-2 rounded-xl transition duration-300">
-                            Log out
-                        </a>
+                      <a href="{% url 'account_logout' %}" class="bg-[#4db8a4] hover:bg-[#155c94] text-white px-4 py-2 rounded-xl transition duration-300">
+                        Log out
+                      </a>
                     </li>
-                    {% else %}
+                  {% else %}
                     <li>
-                        <a href="{% url 'account_login' %}" class="bg-[#4db8a4] hover:bg-[#155c94] text-white px-4 py-2 rounded-xl transition duration-300">
-                            Log in
-                        </a>
+                      <a href="{% url 'account_login' %}" class="bg-[#4db8a4] hover:bg-[#155c94] text-white px-4 py-2 rounded-xl transition duration-300">
+                        Log in
+                      </a>
                     </li>
-                    {% endif %}
+                  {% endif %}
                 </ul>
-            </nav>                        
+              </nav>                       
         </div>
     </header>
 
@@ -77,5 +82,6 @@
             <p>© 2025 Care Every Home. All rights reserved.</p>
         </div>
     </footer>
+    
 </body>
 </html>

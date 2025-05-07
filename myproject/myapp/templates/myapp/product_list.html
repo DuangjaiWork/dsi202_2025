@@ -74,44 +74,56 @@
 
     <!-- Product Grid -->
     <section id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-10">
-      {% for product in products %}
-        <a 
-        href="{% url 'product_detail' product.pk %}" 
-        class="block bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 flex flex-col"
-        >
-        {% if product.image %}
-            <div class="aspect-w-1 aspect-h-1 w-full mb-4">
-            <img 
-                src="{{ product.image.url }}" 
-                alt="{{ product.name }}" 
-                class="w-full h-full object-cover rounded-lg"
-            />
-            </div>
-        {% else %}
-            <div class="w-full h-48 bg-gray-100 rounded-lg mb-4 flex items-center justify-center">
-            <span class="text-gray-500">No Image</span>
-            </div>
-        {% endif %}
-        <div class="relative mb-3">
-            <h3 class="text-lg font-extrabold text-[#155c94] hover:text-[#003b6f] transition-colors duration-200 leading-tight bg-gradient-to-r from-[#009aa6]/10 to-transparent pr-2 rounded-lg">
-              {{ product.name|truncatechars:30 }}
-            </h3>
+        {% for product in products %}
+          <div class="block bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 flex flex-col">
+            <!-- Favorite Button -->
+            {% if user.is_authenticated %}
+                <form action="{% url 'toggle_favorite' product.pk %}" method="post" class="absolute top-2 right-2" id="favorite-form-{{ product.pk }}">
+                    {% csrf_token %}
+                    <button type="submit" class="focus:outline-none" onclick="redirectToFavoritesPage(event)">
+                    {% if product in user.favorite_set.all %}
+                        <i class="fas fa-heart text-red-500 text-2xl"></i>
+                    {% else %}
+                        <i class="far fa-heart text-gray-500 text-2xl hover:text-red-500 transition-colors duration-200"></i>
+                    {% endif %}
+                    </button>
+                </form>
+                {% endif %}
+            <a href="{% url 'product_detail' product.pk %}" class="flex flex-col flex-grow">
+              {% if product.image %}
+                <div class="aspect-w-1 aspect-h-1 w-full mb-4">
+                  <img 
+                    src="{{ product.image.url }}" 
+                    alt="{{ product.name }}" 
+                    class="w-full h-full object-cover rounded-lg"
+                  />
+                </div>
+              {% else %}
+                <div class="w-full h-48 bg-gray-100 rounded-lg mb-4 flex items-center justify-center">
+                  <span class="text-gray-500">No Image</span>
+                </div>
+              {% endif %}
+              <div class="relative mb-3">
+                <h3 class="text-lg font-extrabold text-[#155c94] hover:text-[#003b6f] transition-colors duration-200 leading-tight bg-gradient-to-r from-[#009aa6]/10 to-transparent pr-2 rounded-lg">
+                  {{ product.name|truncatechars:30 }}
+                </h3>
+              </div>
+              <p class="text-[#000000] font-medium mb-1">฿{{ product.monthly_rate }}/month</p>
+              <p class="text-[#009aa6] text-sm mb-1">Stock: {{ product.stock }}</p>
+              <span 
+                class="mt-3 inline-block bg-[#29AB87] text-white py-2 px-4 rounded-lg hover:bg-[#23CB371] transition-all duration-300 text-center"
+              >
+                Rent Now
+              </span>
+            </a>
           </div>
-        <p class="text-[#000000] font-medium mb-1">฿{{ product.monthly_rate }}/month</p>
-        <p class="text-[#009aa6] text-sm mb-1">Stock: {{ product.stock }}</p>
-        <span 
-            class="mt-3 inline-block bg-[#29AB87] text-white py-2 px-4 rounded-lg hover:bg-[#23CB371] transition-all duration-300 text-center"
-        >
-            Rent Now
-        </span>
-        </a>
-      {% empty %}
-        <div class="col-span-full text-center text-gray-600 py-10">
-          <p class="text-lg">No products available at the moment.</p>
-          <p class="text-sm">Try adjusting your search or filters.</p>
-        </div>
-      {% endfor %}
-    </section>
+        {% empty %}
+          <div class="col-span-full text-center text-gray-600 py-10">
+            <p class="text-lg">No products available at the moment.</p>
+            <p class="text-sm">Try adjusting your search or filters.</p>
+          </div>
+        {% endfor %}
+      </section>
 
     <!-- Pagination Controls -->
     {% if page_obj.paginator.num_pages > 1 %}

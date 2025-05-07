@@ -1,6 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect, get_object_or_404
 from django.views.generic import ListView, DetailView, CreateView
-from .models import Product, Rental, Category
+from .models import Product, Rental, Category, Favorite
 from django.db.models import Q, Sum
 from .forms import RentalForm
 from django.urls import reverse_lazy
@@ -8,6 +8,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from rest_framework import generics
 from .serializers import ProductSerializer
 from django.core.paginator import Paginator
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
 def home(request):
     return render(request, 'myapp/home.html')
@@ -50,6 +52,29 @@ class ProductListView(ListView):
         context['selected_category'] = self.request.GET.get('category', '')
         context['selected_sort'] = self.request.GET.get('sort', '')
         return context
+    
+# View to toggle favorite status
+@login_required
+def toggle_favorite(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    favorite, created = Favorite.objects.get_or_create(user=request.user, product=product)
+    
+    if not created:
+        favorite.delete()
+        messages.success(request, f"{product.name} removed from favorites.")
+    else:
+        messages.success(request, f"{product.name} added to favorites.")
+    
+    return redirect(request.META.get('HTTP_REFERER', 'product_list'))
+
+# View to display favorites
+class FavoriteListView(LoginRequiredMixin, ListView):
+    model = Favorite
+    template_name = 'myapp/favorite.html'
+    context_object_name = 'favorites'
+
+    def get_queryset(self):
+        return Favorite.objects.filter(user=self.request.user).order_by('-created_at')
 
 class ProductDetailView(DetailView):
     model = Product
