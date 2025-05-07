@@ -81,3 +81,4 @@ def dashboard(request):
         'recent_rentals': recent_rentals,
     }
     return render(request, 'myapp/dashboard.html', context)
+

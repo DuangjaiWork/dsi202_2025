@@ -6,3 +6,7 @@ django-extensions==3.2.3
 # tailwindcss, whitenoise, or anything else you use in your project
 Pillow
 djangorestframework
+django-allauth
+requests
+PyJWT
+cryptography
