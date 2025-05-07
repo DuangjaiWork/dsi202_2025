@@ -1,10 +1,15 @@
 from django.contrib import admin
-from .models import Product, Rental, Donation
+from .models import Product, Rental, Donation, Category
+
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    search_fields = ('name',)
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'is_available', 'monthly_rate', 'image', 'created_at')
-    list_filter = ('is_available',)
+    list_display = ('name', 'is_available', 'monthly_rate', 'stock', 'category', 'image')
+    list_filter = ('is_available', 'category')
     search_fields = ('name', 'description')
 
 @admin.register(Rental)
