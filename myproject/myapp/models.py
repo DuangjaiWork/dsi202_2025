@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.timezone import now
 from decimal import Decimal
+from datetime import timedelta
 
 # User Type Choices
 USER_TYPE_CHOICES = (
@@ -66,35 +67,75 @@ class Cart(models.Model):
     def __str__(self):
         return f"{self.user.username} - {self.product.name}"
 
+
+RENTAL_STATUS_CHOICES = (
+    ('preparing', 'Preparing'),
+    ('ongoing', 'Ongoing'),
+    ('returning', 'Returning'),
+    ('returned', 'Returned'),
+)
+
 class Rental(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     start_date = models.DateField(default=now, null=True)
-    end_date = models.DateField(null=True, blank=True)
+    rental_months = models.PositiveIntegerField(default=1, help_text="Number of months for rental (1-12)")
     total_fee = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    returned = models.BooleanField(default=False)
+    status = models.CharField(max_length=20, choices=RENTAL_STATUS_CHOICES, default='preparing')
     created_at = models.DateTimeField(auto_now_add=True)
+    last_payment_reminder = models.DateTimeField(null=True, blank=True)
 
     def calculate_total_fee(self):
-        if not self.start_date or not self.end_date:
-            return self.product.monthly_rate
-        days_diff = (self.end_date - self.start_date).days + 1
-        daily_rate = self.product.monthly_rate / Decimal('30')
-        total_fee = daily_rate * Decimal(str(days_diff))
+        # Calculate total fee based on rental months
+        monthly_rate = self.product.monthly_rate
+        total_fee = monthly_rate * Decimal(str(self.rental_months))
         return total_fee.quantize(Decimal('0.01'))
+
+    def get_end_date(self):
+        # Calculate end date based on start date and rental months
+        if not self.start_date:
+            return None
+        # Approximate 1 month as 30 days for simplicity
+        days = self.rental_months * 30
+        return self.start_date + timedelta(days=days)
+
+    def remaining_months(self):
+        if not self.start_date or self.status == 'returned':
+            return 0
+        today = now().date()
+        end_date = self.get_end_date()
+        if today >= end_date:
+            return 0
+        # Calculate remaining months (approximate)
+        days_left = (end_date - today).days
+        return max(1, (days_left + 29) // 30)
+
+    def needs_payment_reminder(self):
+        if self.status != 'ongoing' or not self.start_date:
+            return False
+        today = now()
+        days_since_start = (today.date() - self.start_date).days
+        # Check if it's been approximately a month (30 days) since last reminder or start
+        if not self.last_payment_reminder:
+            return days_since_start >= 25  # First reminder after 25 days
+        days_since_last_reminder = (today - self.last_payment_reminder).days
+        return days_since_last_reminder >= 25  # Reminder every 25 days
 
     def save(self, *args, **kwargs):
         self.total_fee = self.calculate_total_fee()
-        if not self.pk and self.product.stock > 0:
-            self.product.stock -= 1
-            self.product.save()
-        if self.pk and self.returned and not Rental.objects.get(pk=self.pk).returned:
-            self.product.stock += 1
-            self.product.save()
+        if not self.pk:  # New rental
+            if self.product.stock > 0:
+                self.product.stock -= 1
+                self.product.save()
+        else:  # Updating existing rental
+            old_rental = Rental.objects.get(pk=self.pk)
+            if self.status == 'returned' and old_rental.status != 'returned':
+                self.product.stock += 1
+                self.product.save()
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.user.username} - {self.product.name}"
+        return f"{self.user.username} - {self.product.name} ({self.status})"
 
 class Donation(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

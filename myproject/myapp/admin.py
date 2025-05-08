@@ -33,12 +33,13 @@ class CartAdmin(admin.ModelAdmin):
 
 @admin.register(Rental)
 class RentalAdmin(admin.ModelAdmin):
-    list_display = ('user', 'product', 'start_date', 'end_date', 'total_fee', 'returned', 'created_at')
-    list_filter = ('returned', 'start_date', 'end_date')
+    list_display = ('user', 'product', 'start_date', 'rental_months', 'total_fee', 'status', 'created_at')
+    list_filter = ('status', 'start_date')
     search_fields = ('user__username', 'product__name')
+    list_editable = ('status',)  # Allow admins to change status directly in the list view
 
 @admin.register(Donation)
 class DonationAdmin(admin.ModelAdmin):
-    list_display = ('user', 'product_name', 'accepted', 'created_at', 'image')  # Added image
+    list_display = ('user', 'product_name', 'accepted', 'created_at', 'image')
     list_filter = ('accepted',)
     search_fields = ('user__username', 'product_name', 'description')

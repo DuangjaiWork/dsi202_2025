@@ -37,7 +37,7 @@
 
             <!-- Navigation Menu -->
             <nav id="nav-menu" class="hidden md:flex md:items-center absolute md:static top-24 left-0 w-full bg-[#fefefe] shadow-md md:shadow-none p-4 md:p-0 transform -translate-y-full md:transform-none transition-transform duration-500 ease-in-out" aria-labelledby="hamburger-btn">
-                <ul class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 items-center">
+                <ul class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 md:justify-end items-center md:items-start w-full">
                     <li>
                         <a href="{% url 'home' %}" class="text-black hover:text-[#155c94] transition duration-300">
                             Home
@@ -71,7 +71,7 @@
                         </li>
                         <li>
                             <a href="{% url 'account_logout' %}" class="bg-[#4db8a4] hover:bg-[#155c94] text-white px-4 py-2 rounded-xl transition duration-300">
-                                Log out
+                            Log out
                             </a>
                         </li>
                     {% else %}
@@ -82,7 +82,7 @@
                         </li>
                     {% endif %}
                 </ul>
-            </nav>                       
+            </nav>          
         </div>
     </header>
 

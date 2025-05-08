@@ -10,6 +10,7 @@ from rest_framework import generics
 from .serializers import ProductSerializer
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.utils import timezone
 
 def home(request):
     return render(request, 'myapp/home.html')
@@ -115,17 +116,28 @@ class RentProductView(LoginRequiredMixin, CreateView):
     model = Rental
     form_class = RentalForm
     template_name = 'myapp/rent_product.html'
-    success_url = reverse_lazy('product_list')
+    success_url = reverse_lazy('user_profile')  # Redirect to user profile after rental
 
     def form_valid(self, form):
         form.instance.user = self.request.user
         form.instance.product = Product.objects.get(pk=self.kwargs['pk'])
+        form.instance.rental_months = int(self.request.POST.get('rental_months'))
+        messages.success(self.request, f"Rental for {form.instance.product.name} confirmed!")
         return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['product'] = Product.objects.get(pk=self.kwargs['pk'])
         return context
+
+@login_required
+def mark_payment(request, rental_id):
+    rental = get_object_or_404(Rental, id=rental_id, user=request.user)
+    if rental.status == 'ongoing':
+        rental.last_payment_reminder = timezone.now()
+        rental.save()
+        messages.success(request, "Payment recorded. Reminder reset.")
+    return redirect('user_profile')
 
 class ProductListCreateAPIView(generics.ListCreateAPIView):
     queryset = Product.objects.filter(stock__gt=0)
@@ -157,7 +169,7 @@ def dashboard(request):
     }
     return render(request, 'myapp/dashboard.html', context)
 
-# myapp/views.py (only showing the updated user_profile view)
+# myapp/views.py
 @login_required
 def user_profile(request):
     # Get or create user profile
@@ -173,7 +185,7 @@ def user_profile(request):
 
         # Handle donation form (only for Donaters)
         if user_profile.user_type == 'donater':
-            donation_form = DonationForm(request.POST, request.FILES)  # Add request.FILES
+            donation_form = DonationForm(request.POST, request.FILES)
             if donation_form.is_valid():
                 donation = donation_form.save(commit=False)
                 donation.user = request.user
@@ -191,7 +203,7 @@ def user_profile(request):
         'profile_form': profile_form,
         'donation_form': donation_form,
         'user_profile': user_profile,
-        'rentals': Rental.objects.filter(user=request.user, returned=False) if user_profile.user_type == 'renter' else [],
+        'rentals': Rental.objects.filter(user=request.user, status__in=['preparing', 'ongoing', 'returning']) if user_profile.user_type == 'renter' else [],
         'donations': Donation.objects.filter(user=request.user).order_by('-created_at') if user_profile.user_type == 'donater' else [],
     }
     return render(request, 'myapp/user.html', context)

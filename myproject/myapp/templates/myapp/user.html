@@ -20,7 +20,7 @@
         <!-- Conditional Second Section (Donater Only) -->
         {% if user_profile.user_type == 'donater' %}
             <h2 class="text-2xl font-bold mt-8 mb-4 text-[#155c94]">Submit a Donation</h2>
-            <form method="POST" class="space-y-4">
+            <form method="POST" enctype="multipart/form-data" class="space-y-4">
                 {% csrf_token %}
                 {{ donation_form.as_p }}
                 <button type="submit" class="bg-[#4db8a4] hover:bg-[#155c94] text-white px-4 py-2 rounded transition duration-300 w-full">
@@ -58,12 +58,27 @@
             {% if rentals %}
                 <ul class="space-y-4">
                     {% for rental in rentals %}
-                        <li class="bg-gray-100 p-4 rounded">
-                            <p><strong>{{ rental.product.name }}</strong></p>
-                            <p>Start Date: {{ rental.start_date }}</p>
-                            <p>End Date: {{ rental.end_date|default:"Ongoing" }}</p>
-                            <p>Total Fee: ${{ rental.total_fee }}</p>
-                        </li>
+                        {% if rental.status != 'returned' %}
+                            <li class="bg-gray-100 p-4 rounded">
+                                <p><strong>{{ rental.product.name }}</strong></p>
+                                <p>Start Date: {{ rental.start_date }}</p>
+                                <p>End Date: {{ rental.get_end_date|default:"Ongoing" }}</p>
+                                <p>Remaining Months: {{ rental.remaining_months }}</p>
+                                <p>Status: {{ rental.get_status_display }}</p>
+                                <p>Total Fee: ฿{{ rental.total_fee }}</p>
+                                {% if rental.status == 'ongoing' %}
+                                    <form action="{% url 'mark_payment' rental.id %}" method="post" class="inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="bg-[#4db8a4] hover:bg-[#155c94] text-white px-4 py-2 rounded transition duration-300">
+                                            Pay
+                                        </button>
+                                    </form>
+                                    {% if rental.needs_payment_reminder %}
+                                        <p class="text-red-500 font-semibold mt-2">Please Pay: Monthly payment due!</p>
+                                    {% endif %}
+                                {% endif %}
+                            </li>
+                        {% endif %}
                     {% endfor %}
                 </ul>
             {% else %}
