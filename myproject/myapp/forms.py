@@ -1,10 +1,10 @@
 # myapp/forms.py
 from django import forms
-from .models import Rental, UserProfile, Donation, USER_TYPE_CHOICES
+from .models import Rental, UserProfile, Donation, Review, USER_TYPE_CHOICES
 
 class RentalForm(forms.ModelForm):
     rental_months = forms.ChoiceField(
-        choices=[(i, f"{i} Month{'s' if i > 1 else ''}") for i in range(1, 13)],
+        choices=[(i, f"{i}") for i in range(1, 13)],
         widget=forms.Select(attrs={'class': 'w-full p-3 border border-[#009aa6] rounded-lg'}),
     )
 
@@ -31,4 +31,13 @@ class DonationForm(forms.ModelForm):
         widgets = {
             'description': forms.Textarea(attrs={'rows': 4}),
             'image': forms.ClearableFileInput(attrs={'accept': 'image/*'}),
+        }
+
+class ReviewForm(forms.ModelForm):
+    class Meta:
+        model = Review
+        fields = ['content', 'rating']
+        widgets = {
+            'content': forms.Textarea(attrs={'rows': 4, 'class': 'w-full p-3 border border-[#009aa6] rounded-lg'}),
+            'rating': forms.Select(choices=[(i, f"{i} Star{'s' if i > 1 else ''}") for i in range(1, 6)], attrs={'class': 'w-full p-3 border border-[#009aa6] rounded-lg'}),
         }

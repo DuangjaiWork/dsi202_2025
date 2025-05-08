@@ -1,9 +1,9 @@
 # myapp/views.py
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, DetailView, CreateView
-from .models import Product, Rental, Category, Favorite, Cart, UserProfile, Donation
+from .models import Product, Rental, Category, Favorite, Cart, UserProfile, Donation, Review, ReviewLike
 from django.db.models import Q, Sum
-from .forms import RentalForm, UserProfileForm, DonationForm
+from .forms import RentalForm, UserProfileForm, DonationForm, ReviewForm
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from rest_framework import generics
@@ -107,16 +107,21 @@ class ProductDetailView(DetailView):
         if self.request.user.is_authenticated:
             context['user_favorites'] = Favorite.objects.filter(user=self.request.user).values_list('product_id', flat=True)
             context['user_cart'] = Cart.objects.filter(user=self.request.user).values_list('product_id', flat=True)
+            context['review_form'] = ReviewForm()
+            context['user_likes'] = ReviewLike.objects.filter(user=self.request.user, review__product=self.object).values_list('review_id', flat=True)
         else:
             context['user_favorites'] = []
             context['user_cart'] = []
+            context['review_form'] = None
+            context['user_likes'] = []
+        context['reviews'] = self.object.reviews.all()
         return context
 
 class RentProductView(LoginRequiredMixin, CreateView):
     model = Rental
     form_class = RentalForm
     template_name = 'myapp/rent_product.html'
-    success_url = reverse_lazy('user_profile')  # Redirect to user profile after rental
+    success_url = reverse_lazy('user_profile')
 
     def form_valid(self, form):
         form.instance.user = self.request.user
@@ -139,6 +144,33 @@ def mark_payment(request, rental_id):
         messages.success(request, "Payment recorded. Reminder reset.")
     return redirect('user_profile')
 
+@login_required
+def post_review(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    if request.method == 'POST':
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.user = request.user
+            review.product = product
+            review.save()
+            messages.success(request, "Review posted successfully!")
+            return redirect('product_detail', pk=product_id)
+    return redirect('product_detail', pk=product_id)
+
+@login_required
+def toggle_review_like(request, review_id):
+    review = get_object_or_404(Review, id=review_id)
+    like, created = ReviewLike.objects.get_or_create(user=request.user, review=review)
+    
+    if not created:
+        like.delete()
+        messages.success(request, "Like removed.")
+    else:
+        messages.success(request, "Like added!")
+    
+    return redirect(request.META.get('HTTP_REFERER', 'product_list'))
+
 class ProductListCreateAPIView(generics.ListCreateAPIView):
     queryset = Product.objects.filter(stock__gt=0)
     serializer_class = ProductSerializer
@@ -152,7 +184,7 @@ def dashboard(request):
     available_products = Product.objects.filter(is_available=True).count()
     unavailable_products = total_products - available_products
     total_rentals = Rental.objects.count()
-    total_revenue = Rental.objects.filter(end_date__isnull=False).aggregate(total=Sum('total_fee'))['total'] or 0.00
+    total_revenue = Rental.objects.filter(status='returned').aggregate(total=Sum('total_fee'))['total'] or 0.00
     recent_rentals = Rental.objects.order_by('-start_date')[:5]
     total_stock = Product.objects.aggregate(total=Sum('stock'))['total'] or 0
     category_count = Category.objects.count()
@@ -169,21 +201,17 @@ def dashboard(request):
     }
     return render(request, 'myapp/dashboard.html', context)
 
-# myapp/views.py
 @login_required
 def user_profile(request):
-    # Get or create user profile
     user_profile, created = UserProfile.objects.get_or_create(user=request.user)
 
     if request.method == 'POST':
-        # Handle user profile form
         profile_form = UserProfileForm(request.POST, instance=user_profile)
         if profile_form.is_valid():
             profile_form.save()
             messages.success(request, "Profile updated successfully.")
             return redirect('user_profile')
 
-        # Handle donation form (only for Donaters)
         if user_profile.user_type == 'donater':
             donation_form = DonationForm(request.POST, request.FILES)
             if donation_form.is_valid():
@@ -198,7 +226,6 @@ def user_profile(request):
         profile_form = UserProfileForm(instance=user_profile)
         donation_form = DonationForm() if user_profile.user_type == 'donater' else None
 
-    # Context for template
     context = {
         'profile_form': profile_form,
         'donation_form': donation_form,

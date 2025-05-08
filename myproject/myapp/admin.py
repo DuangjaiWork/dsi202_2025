@@ -1,6 +1,6 @@
 # myapp/admin.py
 from django.contrib import admin
-from .models import Product, Rental, Donation, Category, Favorite, Cart, UserProfile
+from .models import Product, Rental, Donation, Category, Favorite, Cart, UserProfile, Review, ReviewLike
 
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
@@ -36,10 +36,22 @@ class RentalAdmin(admin.ModelAdmin):
     list_display = ('user', 'product', 'start_date', 'rental_months', 'total_fee', 'status', 'created_at')
     list_filter = ('status', 'start_date')
     search_fields = ('user__username', 'product__name')
-    list_editable = ('status',)  # Allow admins to change status directly in the list view
+    list_editable = ('status',)
 
 @admin.register(Donation)
 class DonationAdmin(admin.ModelAdmin):
     list_display = ('user', 'product_name', 'accepted', 'created_at', 'image')
     list_filter = ('accepted',)
     search_fields = ('user__username', 'product_name', 'description')
+
+@admin.register(Review)
+class ReviewAdmin(admin.ModelAdmin):
+    list_display = ('user', 'product', 'rating', 'created_at')
+    list_filter = ('rating', 'created_at')
+    search_fields = ('user__username', 'product__name', 'content')
+
+@admin.register(ReviewLike)
+class ReviewLikeAdmin(admin.ModelAdmin):
+    list_display = ('user', 'review', 'created_at')
+    list_filter = ('created_at',)
+    search_fields = ('user__username', 'review__content')
