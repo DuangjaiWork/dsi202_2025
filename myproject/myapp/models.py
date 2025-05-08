@@ -1,7 +1,24 @@
+# myapp/models.py
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.timezone import now
 from decimal import Decimal
+
+# User Type Choices
+USER_TYPE_CHOICES = (
+    ('renter', 'Renter'),
+    ('donater', 'Donater'),
+)
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100, blank=True)
+    last_name = models.CharField(max_length=100, blank=True)
+    address = models.TextField(blank=True)
+    user_type = models.CharField(max_length=10, choices=USER_TYPE_CHOICES, default='renter')
+
+    def __str__(self):
+        return f"{self.user.username}'s Profile"
 
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -21,31 +38,30 @@ class Product(models.Model):
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
 
     def save(self, *args, **kwargs):
-        # Update is_available based on stock
         self.is_available = self.stock > 0
         super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name
-    
+
 class Favorite(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ('user', 'product')  # Prevent duplicate favorites
+        unique_together = ('user', 'product')
 
     def __str__(self):
         return f"{self.user.username} - {self.product.name}"
-    
+
 class Cart(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ('user', 'product')  # Prevent duplicate cart items
+        unique_together = ('user', 'product')
 
     def __str__(self):
         return f"{self.user.username} - {self.product.name}"
@@ -69,25 +85,24 @@ class Rental(models.Model):
 
     def save(self, *args, **kwargs):
         self.total_fee = self.calculate_total_fee()
-        # Decrease stock when a rental is created
-        if not self.pk and self.product.stock > 0:  # Only for new rentals
+        if not self.pk and self.product.stock > 0:
             self.product.stock -= 1
-            self.product.save()  # Calls Product.save() to update is_available
-        # Increase stock when rental is marked as returned
+            self.product.save()
         if self.pk and self.returned and not Rental.objects.get(pk=self.pk).returned:
             self.product.stock += 1
-            self.product.save()  # Calls Product.save() to update is_available
+            self.product.save()
         super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.user.username} - {self.product.name}"
 
 class Donation(models.Model):
-    donor = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     product_name = models.CharField(max_length=255)
     description = models.TextField(blank=True)
+    image = models.ImageField(upload_to='donations/', blank=True, null=True)  # New ImageField
     accepted = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.donor.username} donated {self.product_name}"
+        return f"{self.user.username} donated {self.product_name}"

@@ -1,20 +1,116 @@
-<!-- /myproject/myapp/templates/myapp/bike_detail.html -->
+<!-- myapp/templates/myapp/product_detail.html -->
 {% extends 'myapp/base.html' %}
-{% block title %}{{ product.name }} Details{% endblock %}
+{% block title %}{{ product.name }} Details - Care Every Home{% endblock %}
+
 {% block content %}
-    <h1 class="text-3xl font-bold text-gray-800 mb-4">{{ product.name }}</h1>
-    <div class="bg-white p-6 rounded shadow">
-        <p class="text-lg text-gray-700"><strong>Monthly Rate:</strong> ${{ product.monthly_rate }}</p>
-        <p class="text-lg text-gray-700"><strong>Available:</strong> {% if product.is_available %}<span class="text-green-600">Yes</span>{% else %}<span class="text-red-600">No</span>{% endif %}</p>
-        <p class="text-lg text-gray-700"><strong>Description:</strong> {{ product.description }}</p>
+  <div class="container mx-auto px-4 py-8">
+    <!-- Header -->
+    <div class="relative text-center my-10">
+      <h1 class="text-4xl md:text-5xl font-extrabold text-[#000000] rounded-lg py-4 px-8 inline-block shadow-lg transform transition-all duration-300 hover:shadow-2xl hover:scale-105 animate-fade-in">
+        {{ product.name }}
+        <span class="block w-24 h-1 bg-[#009aa6] mx-auto mt-3 rounded-full"></span>
+      </h1>
+    </div>
+
+    <!-- Product Details -->
+    <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col md:flex-row">
+      <!-- Product Image -->
+      <div class="md:w-1/2 mb-6 md:mb-0">
         {% if product.image %}
-            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="mt-4 w-full max-w-md rounded">
+          <img 
+            src="{{ product.image.url }}" 
+            alt="{{ product.name }}" 
+            class="w-full h-auto object-cover rounded-lg max-h-96"
+          />
+        {% else %}
+          <div class="w-full h-64 bg-gray-100 rounded-lg flex items-center justify-center">
+            <span class="text-gray-500">No Image</span>
+          </div>
         {% endif %}
-        {% if product.is_available and user.is_authenticated %}
-            <a href="{% url 'rent_product' product.pk %}" class="inline-block mt-4 bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition">Rent Now</a>
+      </div>
+
+      <!-- Product Information -->
+      <div class="md:w-1/2 md:pl-6 flex flex-col">
+        <h3 class="text-2xl font-extrabold text-[#155c94] mb-4">{{ product.name }}</h3>
+        <p class="text-gray-700 mb-4"><strong>Description:</strong> {{ product.description|default:"No description available" }}</p>
+        <p class="text-gray-700 mb-2"><strong>Monthly Rate:</strong> ฿{{ product.monthly_rate }}/month</p>
+        <p class="text-gray-700 mb-2"><strong>Availability:</strong> 
+          {% if product.is_available %}
+            <span class="text-green-600">Available</span>
+          {% else %}
+            <span class="text-red-600">Not Available</span>
+          {% endif %}
+        </p>
+        <p class="text-gray-700 mb-2"><strong>Stock:</strong> {{ product.stock }}</p>
+        <p class="text-gray-700 mb-4"><strong>Category:</strong> {{ product.category.name|default:"No category" }}</p>
+
+        <!-- Action Buttons -->
+        {% if user.is_authenticated %}
+          <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mt-4">
+            <!-- Rent Now Button -->
+            {% if product.is_available %}
+              <a 
+                href="{% url 'rent_product' product.pk %}" 
+                class="bg-[#29AB87] text-white py-2 px-6 rounded-lg hover:bg-[#23CB371] transition-all duration-300 text-center"
+              >
+                Rent Now
+              </a>
+            {% endif %}
+
+            <!-- Favorite Button -->
+            <form action="{% url 'toggle_favorite' product.pk %}" method="post">
+              {% csrf_token %}
+              <button 
+                type="submit" 
+                class="bg-{% if product.id in user_favorites %}red-500 hover:bg-red-600{% else %}yellow-500 hover:bg-yellow-600{% endif %} text-white py-2 px-6 rounded-lg transition-all duration-300 flex items-center justify-center"
+              >
+                <i class="fas fa-{% if product.id in user_favorites %}trash-alt{% else %}heart{% endif %} mr-2"></i>
+                {% if product.id in user_favorites %}
+                  Remove from Favorites
+                {% else %}
+                  Add to Favorites
+                {% endif %}
+              </button>
+            </form>
+
+            <!-- Cart Button -->
+            <form action="{% url 'toggle_cart' product.pk %}" method="post">
+              {% csrf_token %}
+              <button 
+                type="submit" 
+                class="bg-{% if product.id in user_cart %}red-500 hover:bg-red-600{% else %}blue-500 hover:bg-blue-600{% endif %} text-white py-2 px-6 rounded-lg transition-all duration-300 flex items-center justify-center"
+              >
+                <i class="fas fa-{% if product.id in user_cart %}trash-alt{% else %}cart-plus{% endif %} mr-2"></i>
+                {% if product.id in user_cart %}
+                  Remove from Cart
+                {% else %}
+                  Add to Cart
+                {% endif %}
+              </button>
+            </form>
+          </div>
+        {% else %}
+          <p class="text-gray-600 mt-4">
+            Please <a href="{% url 'account_login' %}" class="text-[#009aa6] hover:underline">log in</a> to rent, favorite, or add this product to your cart.
+          </p>
         {% endif %}
+      </div>
     </div>
+
+    <!-- Back to Product List -->
     <div class="mt-6">
-        <a href="{% url 'product_list' %}" class="text-blue-600 hover:underline">Back to Product List</a>
+      <a href="{% url 'product_list' %}" class="text-[#009aa6] hover:underline">Back to Product List</a>
     </div>
+  </div>
+
+  <style>
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    
+    .animate-fade-in {
+      animation: fadeIn 1s ease-out forwards;
+    }
+  </style>
 {% endblock %}

@@ -1,20 +1,19 @@
-from django.shortcuts import render,redirect, get_object_or_404
+# myapp/views.py
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, DetailView, CreateView
-from .models import Product, Rental, Category, Favorite, Cart
+from .models import Product, Rental, Category, Favorite, Cart, UserProfile, Donation
 from django.db.models import Q, Sum
-from .forms import RentalForm
+from .forms import RentalForm, UserProfileForm, DonationForm
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from rest_framework import generics
 from .serializers import ProductSerializer
-from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
 def home(request):
     return render(request, 'myapp/home.html')
 
-# myapp/views.py (Update ProductListView)
 class ProductListView(ListView):
     model = Product
     template_name = 'myapp/product_list.html'
@@ -22,28 +21,25 @@ class ProductListView(ListView):
     paginate_by = 8
 
     def get_queryset(self):
-        queryset = super().get_queryset().filter(stock__gt=0)  # Only show products with stock > 0
+        queryset = super().get_queryset().filter(stock__gt=0)
         query = self.request.GET.get('q')
         category_id = self.request.GET.get('category')
         sort = self.request.GET.get('sort')
 
-        # Search filter
         if query:
             queryset = queryset.filter(
                 Q(name__icontains=query) | Q(description__icontains=query)
             )
 
-        # Category filter
         if category_id:
             queryset = queryset.filter(category__id=category_id)
 
-        # Sorting
         if sort == 'price_asc':
             queryset = queryset.order_by('monthly_rate')
         elif sort == 'price_desc':
             queryset = queryset.order_by('-monthly_rate')
         else:
-            queryset = queryset.order_by('-created_at')  # Default sort
+            queryset = queryset.order_by('-created_at')
 
         return queryset
 
@@ -52,14 +48,12 @@ class ProductListView(ListView):
         context['categories'] = Category.objects.all()
         context['selected_category'] = self.request.GET.get('category', '')
         context['selected_sort'] = self.request.GET.get('sort', '')
-        # Add user's cart items to context
         if self.request.user.is_authenticated:
             context['user_cart'] = Cart.objects.filter(user=self.request.user).values_list('product_id', flat=True)
         else:
             context['user_cart'] = []
         return context
-    
-# View to toggle favorite status
+
 @login_required
 def toggle_favorite(request, product_id):
     product = get_object_or_404(Product, id=product_id)
@@ -73,7 +67,6 @@ def toggle_favorite(request, product_id):
     
     return redirect(request.META.get('HTTP_REFERER', 'product_list'))
 
-# View to display favorites
 class FavoriteListView(LoginRequiredMixin, ListView):
     model = Favorite
     template_name = 'myapp/favorite.html'
@@ -81,8 +74,7 @@ class FavoriteListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         return Favorite.objects.filter(user=self.request.user).order_by('-created_at')
-    
-# View to add/remove items from cart
+
 @login_required
 def toggle_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
@@ -96,7 +88,6 @@ def toggle_cart(request, product_id):
     
     return redirect(request.META.get('HTTP_REFERER', 'product_list'))
 
-# View to display cart
 class CartListView(LoginRequiredMixin, ListView):
     model = Cart
     template_name = 'myapp/cart.html'
@@ -109,6 +100,16 @@ class ProductDetailView(DetailView):
     model = Product
     template_name = 'myapp/product_detail.html'
     context_object_name = 'product'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user.is_authenticated:
+            context['user_favorites'] = Favorite.objects.filter(user=self.request.user).values_list('product_id', flat=True)
+            context['user_cart'] = Cart.objects.filter(user=self.request.user).values_list('product_id', flat=True)
+        else:
+            context['user_favorites'] = []
+            context['user_cart'] = []
+        return context
 
 class RentProductView(LoginRequiredMixin, CreateView):
     model = Rental
@@ -155,3 +156,42 @@ def dashboard(request):
         'category_count': category_count,
     }
     return render(request, 'myapp/dashboard.html', context)
+
+# myapp/views.py (only showing the updated user_profile view)
+@login_required
+def user_profile(request):
+    # Get or create user profile
+    user_profile, created = UserProfile.objects.get_or_create(user=request.user)
+
+    if request.method == 'POST':
+        # Handle user profile form
+        profile_form = UserProfileForm(request.POST, instance=user_profile)
+        if profile_form.is_valid():
+            profile_form.save()
+            messages.success(request, "Profile updated successfully.")
+            return redirect('user_profile')
+
+        # Handle donation form (only for Donaters)
+        if user_profile.user_type == 'donater':
+            donation_form = DonationForm(request.POST, request.FILES)  # Add request.FILES
+            if donation_form.is_valid():
+                donation = donation_form.save(commit=False)
+                donation.user = request.user
+                donation.save()
+                messages.success(request, "Donation submitted successfully.")
+                return redirect('user_profile')
+        else:
+            donation_form = DonationForm()
+    else:
+        profile_form = UserProfileForm(instance=user_profile)
+        donation_form = DonationForm() if user_profile.user_type == 'donater' else None
+
+    # Context for template
+    context = {
+        'profile_form': profile_form,
+        'donation_form': donation_form,
+        'user_profile': user_profile,
+        'rentals': Rental.objects.filter(user=request.user, returned=False) if user_profile.user_type == 'renter' else [],
+        'donations': Donation.objects.filter(user=request.user).order_by('-created_at') if user_profile.user_type == 'donater' else [],
+    }
+    return render(request, 'myapp/user.html', context)

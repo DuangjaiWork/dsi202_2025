@@ -8,10 +8,10 @@
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://kit.fontawesome.com/your-fontawesome-kit.js" crossorigin="anonymous"></script>
     
     <!-- Google Fonts: Noto Sans and Noto Sans Thai -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans&family=Noto+Sans+Thai&display=swap" rel="stylesheet">
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
     <style>
@@ -32,46 +32,51 @@
             
             <nav>
                 <ul class="flex space-x-4 items-center">
-                  <li>
-                    <a href="{% url 'home' %}" class="text-black hover:text-[#155c94] transition duration-300">
-                      Home
-                    </a>
-                  </li>
-                  <li>
-                    <a href="{% url 'product_list' %}" class="text-black hover:text-[#155c94] transition duration-300">
-                      Products
-                    </a>
-                  </li>
-                  {% if user.is_authenticated %}
                     <li>
-                        <a href="{% url 'favorite_list' %}" class="text-[#bb1615] hover:text-[#ff8da1] transition duration-300 flex items-center text-3xl">
-                            <i class="fas fa-heart mr-2 text-4xl"></i>
-                        </a>                          
-                    </li>
-                    <li>
-                        <a href="{% url 'cart_list' %}" class="text-[#009aa6] hover:text-[#4db8a4] transition duration-300 flex items-center text-3xl">
-                            <i class="fas fa-shopping-cart mr-2 text-4xl"></i>
+                        <a href="{% url 'home' %}" class="text-black hover:text-[#155c94] transition duration-300">
+                            Home
                         </a>
                     </li>
                     <li>
-                      <a href="{% url 'dashboard' %}" class="bg-[#4db8a4] hover:bg-[#155c94] text-white px-4 py-2 rounded-xl transition duration-300">
-                        Dashboard
-                      </a>
+                        <a href="{% url 'product_list' %}" class="text-black hover:text-[#155c94] transition duration-300">
+                            Products
+                        </a>
                     </li>
-                    <li>
-                      <a href="{% url 'account_logout' %}" class="bg-[#4db8a4] hover:bg-[#155c94] text-white px-4 py-2 rounded-xl transition duration-300">
-                        Log out
-                      </a>
-                    </li>
-                  {% else %}
-                    <li>
-                      <a href="{% url 'account_login' %}" class="bg-[#4db8a4] hover:bg-[#155c94] text-white px-4 py-2 rounded-xl transition duration-300">
-                        Log in
-                      </a>
-                    </li>
-                  {% endif %}
+                    {% if user.is_authenticated %}
+                        <li>
+                            <a href="{% url 'favorite_list' %}" class="text-[#bb1615] hover:text-[#ff8da1] transition duration-300 flex items-center text-3xl">
+                                <i class="fas fa-heart mr-2 text-4xl"></i>
+                            </a>                          
+                        </li>
+                        <li>
+                            <a href="{% url 'cart_list' %}" class="text-[#009aa6] hover:text-[#4db8a4] transition duration-300 flex items-center text-3xl">
+                                <i class="fas fa-shopping-cart mr-2 text-4xl"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'user_profile' %}" class="bg-[#4db8a4] hover:bg-[#155c94] text-white px-4 py-2 rounded-xl transition duration-300">
+                                Profile
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'dashboard' %}" class="bg-[#4db8a4] hover:bg-[#155c94] text-white px-4 py-2 rounded-xl transition duration-300">
+                                Dashboard
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'account_logout' %}" class="bg-[#4db8a4] hover:bg-[#155c94] text-white px-4 py-2 rounded-xl transition duration-300">
+                                Log out
+                            </a>
+                        </li>
+                    {% else %}
+                        <li>
+                            <a href="{% url 'account_login' %}" class="bg-[#4db8a4] hover:bg-[#155c94] text-white px-4 py-2 rounded-xl transition duration-300">
+                                Log in
+                            </a>
+                        </li>
+                    {% endif %}
                 </ul>
-              </nav>                       
+            </nav>                       
         </div>
     </header>
 
@@ -87,6 +92,5 @@
             <p>© 2025 Care Every Home. All rights reserved.</p>
         </div>
     </footer>
-    
 </body>
 </html>

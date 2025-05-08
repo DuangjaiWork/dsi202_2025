@@ -3,11 +3,11 @@ from django.urls import path
 from .views import (
     home, ProductListView, ProductDetailView, RentProductView, 
     ProductListCreateAPIView, ProductRetrieveUpdateAPIView, 
-    dashboard, toggle_favorite, FavoriteListView, toggle_cart, CartListView  # Add new views
+    dashboard, toggle_favorite, FavoriteListView, toggle_cart, 
+    CartListView, user_profile  # Add user_profile
 )
 
 urlpatterns = [
-    # Existing frontend URLs
     path('', home, name='home'),
     path('products/', ProductListView.as_view(), name='product_list'),
     path('products/<int:pk>/', ProductDetailView.as_view(), name='product_detail'),
@@ -17,6 +17,7 @@ urlpatterns = [
     path('api/products/<int:pk>/', ProductRetrieveUpdateAPIView.as_view(), name='product_api_retrieve_update'),
     path('favorite/toggle/<int:product_id>/', toggle_favorite, name='toggle_favorite'),
     path('favorites/', FavoriteListView.as_view(), name='favorite_list'),
-    path('cart/toggle/<int:product_id>/', toggle_cart, name='toggle_cart'),  # New URL for cart toggle
-    path('cart/', CartListView.as_view(), name='cart_list'),  # New URL for cart page
+    path('cart/toggle/<int:product_id>/', toggle_cart, name='toggle_cart'),
+    path('cart/', CartListView.as_view(), name='cart_list'),
+    path('profile/', user_profile, name='user_profile'),  # New URL for user profile
 ]

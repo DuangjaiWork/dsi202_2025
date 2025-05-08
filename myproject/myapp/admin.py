@@ -1,5 +1,12 @@
+# myapp/admin.py
 from django.contrib import admin
-from .models import Product, Rental, Donation, Category, Favorite, Cart
+from .models import Product, Rental, Donation, Category, Favorite, Cart, UserProfile
+
+@admin.register(UserProfile)
+class UserProfileAdmin(admin.ModelAdmin):
+    list_display = ('user', 'name', 'last_name', 'user_type')
+    list_filter = ('user_type',)
+    search_fields = ('user__username', 'name', 'last_name')
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
@@ -32,6 +39,6 @@ class RentalAdmin(admin.ModelAdmin):
 
 @admin.register(Donation)
 class DonationAdmin(admin.ModelAdmin):
-    list_display = ('donor', 'product_name', 'accepted', 'created_at')
+    list_display = ('user', 'product_name', 'accepted', 'created_at', 'image')  # Added image
     list_filter = ('accepted',)
-    search_fields = ('donor__username', 'product_name', 'description')
+    search_fields = ('user__username', 'product_name', 'description')
