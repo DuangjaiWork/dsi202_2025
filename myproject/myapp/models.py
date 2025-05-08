@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.timezone import now
 from decimal import Decimal
+from datetime import timedelta
 
 # ... (existing imports and models remain unchanged)
 
