@@ -22,7 +22,7 @@
 </head>
 <body class="bg-gray-100">
     <!-- Header with Navigation -->
-    <header class="bg-[#fefefe] text-white p-4 shadow">
+    <header class="bg-[#fefefe] text-white p-4 shadow sticky top-0 z-50">
         <div class="container mx-auto flex justify-between items-center">
             <!-- Logo -->
             <a href="{% url 'home' %}" class="flex items-center space-x-3">
@@ -30,8 +30,14 @@
                 <span class="text-2xl font-bold text-[#155c94]">Care Every Home</span>
             </a>
             
-            <nav>
-                <ul class="flex space-x-4 items-center">
+            <!-- Hamburger Icon (visible on mobile) -->
+            <button id="hamburger-btn" class="md:hidden text-black focus:outline-none" aria-expanded="false" aria-controls="nav-menu">
+                <i id="hamburger-icon" class="fas fa-bars text-2xl"></i>
+            </button>
+
+            <!-- Navigation Menu -->
+            <nav id="nav-menu" class="hidden md:flex md:items-center absolute md:static top-24 left-0 w-full bg-[#fefefe] shadow-md md:shadow-none p-4 md:p-0 transform -translate-y-full md:transform-none transition-transform duration-500 ease-in-out" aria-labelledby="hamburger-btn">
+                <ul class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 items-center">
                     <li>
                         <a href="{% url 'home' %}" class="text-black hover:text-[#155c94] transition duration-300">
                             Home
@@ -92,5 +98,33 @@
             <p>© 2025 Care Every Home. All rights reserved.</p>
         </div>
     </footer>
+
+    <!-- JavaScript for Hamburger Menu Toggle -->
+    <script>
+        document.getElementById('hamburger-btn').addEventListener('click', function () {
+            const navMenu = document.getElementById('nav-menu');
+            const icon = document.getElementById('hamburger-icon');
+            navMenu.classList.toggle('hidden');
+            navMenu.classList.toggle('translate-y-0');
+            navMenu.classList.toggle('-translate-y-full');
+            icon.classList.toggle('fa-bars');
+            icon.classList.toggle('fa-times');
+            this.setAttribute('aria-expanded', !navMenu.classList.contains('hidden'));
+        });
+
+        // Close menu when a link is clicked
+        document.querySelectorAll('#nav-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                const navMenu = document.getElementById('nav-menu');
+                const icon = document.getElementById('hamburger-icon');
+                navMenu.classList.add('hidden');
+                navMenu.classList.remove('translate-y-0');
+                navMenu.classList.add('-translate-y-full');
+                icon.classList.add('fa-bars');
+                icon.classList.remove('fa-times');
+                document.getElementById('hamburger-btn').setAttribute('aria-expanded', 'false');
+            });
+        });
+    </script>
 </body>
 </html>
