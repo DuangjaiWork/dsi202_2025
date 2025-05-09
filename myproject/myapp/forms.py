@@ -12,7 +12,7 @@ class RentalForm(forms.ModelForm):
         model = Rental
         fields = ['start_date', 'rental_months']
         widgets = {
-            'start_date': forms.DateInput(attrs={'type': 'date'}),
+            'start_date': forms.DateInput(attrs={'type': 'date', 'class': 'w-full p-3 border border-[#009aa6] rounded-lg'}),
         }
 
 class UserProfileForm(forms.ModelForm):
@@ -20,8 +20,10 @@ class UserProfileForm(forms.ModelForm):
         model = UserProfile
         fields = ['name', 'last_name', 'address', 'user_type']
         widgets = {
-            'user_type': forms.Select(choices=USER_TYPE_CHOICES),
-            'address': forms.Textarea(attrs={'rows': 4}),
+            'name': forms.TextInput(attrs={'class': 'w-full p-3 border border-[#009aa6] rounded-lg'}),
+            'last_name': forms.TextInput(attrs={'class': 'w-full p-3 border border-[#009aa6] rounded-lg'}),
+            'address': forms.Textarea(attrs={'rows': 4, 'class': 'w-full p-3 border border-[#009aa6] rounded-lg'}),
+            'user_type': forms.Select(choices=USER_TYPE_CHOICES, attrs={'class': 'w-full p-3 border border-[#009aa6] rounded-lg'}),
         }
 
 class DonationForm(forms.ModelForm):
@@ -29,8 +31,9 @@ class DonationForm(forms.ModelForm):
         model = Donation
         fields = ['product_name', 'description', 'image']
         widgets = {
-            'description': forms.Textarea(attrs={'rows': 4}),
-            'image': forms.ClearableFileInput(attrs={'accept': 'image/*'}),
+            'product_name': forms.TextInput(attrs={'class': 'w-full p-3 border border-[#009aa6] rounded-lg'}),
+            'description': forms.Textarea(attrs={'rows': 4, 'class': 'w-full p-3 border border-[#009aa6] rounded-lg'}),
+            'image': forms.ClearableFileInput(attrs={'accept': 'image/*', 'class': 'w-full p-3 border border-[#009aa6] rounded-lg'}),
         }
 
 class ReviewForm(forms.ModelForm):
