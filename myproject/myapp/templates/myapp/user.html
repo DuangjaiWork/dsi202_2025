@@ -77,6 +77,12 @@
                                         <p class="text-red-500 font-semibold mt-2">Please Pay: Monthly payment due!</p>
                                     {% endif %}
                                 {% endif %}
+                                <!-- Review Button (Conditional) -->
+                                {% if rental.status in 'ongoing,returned' %}
+                                    <a href="{% url 'submit_review' rental.id %}" class="bg-[#155c94] hover:bg-[#4db8a4] text-white px-4 py-2 rounded transition duration-300 inline-block mt-2">
+                                        Review
+                                    </a>
+                                {% endif %}
                             </li>
                         {% endif %}
                     {% endfor %}
@@ -100,3 +106,5 @@
     </div>
 {% endif %}
 {% endblock %}
+
+

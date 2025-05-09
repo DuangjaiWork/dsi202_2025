@@ -22,9 +22,17 @@
     <!-- Action Buttons -->
     <div class="flex gap-4">
       {% if product.is_available %}
-        <a href="{% url 'rent_product' product.pk %}" class="bg-[#155c94] text-white py-2 px-4 rounded-lg hover:bg-[#009aa6] transition-all duration-300">
-          Rent Now
-        </a>
+        {% if user.is_authenticated %}
+          <a href="{% url 'rent_product' product.pk %}" class="bg-[#155c94] text-white py-2 px-4 rounded-lg hover:bg-[#009aa6] transition-all duration-300">
+            Rent Now
+          </a>
+        {% else %}
+          <a href="{% url 'account_login' %}?next={% url 'rent_product' product.pk %}" 
+            onclick="alert('You should log in first')" 
+            class="bg-[#155c94] text-white py-2 px-4 rounded-lg hover:bg-[#009aa6] transition-all duration-300">
+            Rent Now
+          </a>
+        {% endif %}
       {% endif %}
       {% if user.is_authenticated %}
         <form action="{% url 'toggle_favorite' product.pk %}" method="post">
@@ -51,23 +59,10 @@
     </div>
   </div>
 
-  <!-- Review Section -->
-  <div class="bg-white p-6 rounded-lg shadow-lg">
+<!-- Review Section -->
+<div class="bg-white p-6 rounded-lg shadow-lg">
     <h2 class="text-2xl font-bold text-[#155c94] mb-4">Reviews</h2>
     
-    <!-- Post Review Form (Authenticated Users Only) -->
-    {% if user.is_authenticated %}
-      <form method="post" action="{% url 'post_review' product.pk %}" class="mb-6">
-        {% csrf_token %}
-        {{ review_form.as_p }}
-        <button type="submit" class="bg-[#4db8a4] hover:bg-[#155c94] text-white px-4 py-2 rounded transition duration-300">
-          Post Review
-        </button>
-      </form>
-    {% else %}
-      <p class="text-gray-600 mb-4">Please <a href="{% url 'login' %}" class="text-[#4db8a4] hover:underline">log in</a> to post a review.</p>
-    {% endif %}
-
     <!-- Review List -->
     {% if reviews %}
       <div class="space-y-4">
@@ -98,6 +93,5 @@
     {% else %}
       <p class="text-gray-600">No reviews yet. Be the first to share your experience!</p>
     {% endif %}
-  </div>
 </div>
 {% endblock %}

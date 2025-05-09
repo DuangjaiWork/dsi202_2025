@@ -51,8 +51,10 @@ class ProductListView(ListView):
         context['selected_sort'] = self.request.GET.get('sort', '')
         if self.request.user.is_authenticated:
             context['user_cart'] = Cart.objects.filter(user=self.request.user).values_list('product_id', flat=True)
+            context['user_favorites'] = Favorite.objects.filter(user=self.request.user).values_list('product_id', flat=True)
         else:
             context['user_cart'] = []
+            context['user_favorites'] = []
         return context
 
 @login_required
@@ -234,3 +236,29 @@ def user_profile(request):
         'donations': Donation.objects.filter(user=request.user).order_by('-created_at') if user_profile.user_type == 'donater' else [],
     }
     return render(request, 'myapp/user.html', context)
+
+@login_required
+def submit_review(request, rental_id):
+    rental = get_object_or_404(Rental, id=rental_id, user=request.user)
+    product = rental.product
+
+    if Review.objects.filter(user=request.user, product=product).exists():
+        messages.error(request, "You have already reviewed this product.")
+        return redirect('product_detail', pk=product.id)
+
+    if request.method == 'POST':
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.user = request.user
+            review.product = product
+            review.save()
+            messages.success(request, "Review posted successfully!")
+            return redirect('product_detail', pk=product.id)
+    else:
+        form = ReviewForm()
+
+    return render(request, 'myapp/submit_review.html', {
+        'form': form,
+        'product': product,
+    })

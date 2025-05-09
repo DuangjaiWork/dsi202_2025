@@ -4,7 +4,7 @@ from .views import (
     home, ProductListView, ProductDetailView, RentProductView, 
     ProductListCreateAPIView, ProductRetrieveUpdateAPIView, 
     dashboard, toggle_favorite, FavoriteListView, toggle_cart, 
-    CartListView, user_profile, mark_payment, post_review, toggle_review_like
+    CartListView, user_profile, mark_payment, post_review, toggle_review_like, submit_review
 )
 
 urlpatterns = [
@@ -23,4 +23,5 @@ urlpatterns = [
     path('rental/<int:rental_id>/pay/', mark_payment, name='mark_payment'),
     path('products/<int:product_id>/review/', post_review, name='post_review'),
     path('review/<int:review_id>/like/', toggle_review_like, name='toggle_review_like'),
+    path('rental/<int:rental_id>/review/', submit_review, name='submit_review'),
 ]

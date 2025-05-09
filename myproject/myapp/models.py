@@ -5,8 +5,6 @@ from django.utils.timezone import now
 from decimal import Decimal
 from datetime import timedelta
 
-# ... (existing imports and models remain unchanged)
-
 # User Type Choices
 USER_TYPE_CHOICES = (
     ('renter', 'Renter'),
