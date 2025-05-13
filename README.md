@@ -39,4 +39,5 @@ Users want to donate medical equipment they no longer need, such as wheelchairs 
 - ## As a User, I want to give feedback so that I can help improve the service and share my experience.
 Users want to share their experience by providing feedback, whether it’s about the rental process, the equipment condition, or the overall service. This helps improve the service, ensuring it meets user needs and encourages continuous improvement.
 
-
+# App Usage Guide
+## As a User, I want to rent medical equipment, so that I can use them.
