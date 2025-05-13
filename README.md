@@ -60,4 +60,5 @@ docker-compose up --build
 ```
 ## Accessing the Web App
 http://localhost:8000/ (Home page)
+
 http://localhost:8000/admin/ (Admin page)
