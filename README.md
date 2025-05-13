@@ -41,3 +41,4 @@ Users want to share their experience by providing feedback, whether it’s about
 
 # App Usage Guide
 ## As a User, I want to rent medical equipment, so that I can use them.
+![Image](https://github.com/user-attachments/assets/1e8c1430-a6f1-4c6e-b748-fae925e63bc3)
