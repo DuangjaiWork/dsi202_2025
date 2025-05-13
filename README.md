@@ -1,4 +1,4 @@
-# dsi202_2025
+# dsi202_2025: Web Application 'Care Evry Home'
 # Abstract
   We started **Care Every Home** because we saw something happening in real life. Families struggling to take care of their loved ones at home, needing medical equipment that was just too expensive to buy. Most people don’t need these things forever, just for a short time while someone recovers or needs extra support. But the cost and the hassle can be overwhelming.
 
