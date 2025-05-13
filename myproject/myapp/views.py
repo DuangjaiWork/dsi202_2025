@@ -262,3 +262,4 @@ def submit_review(request, rental_id):
         'form': form,
         'product': product,
     })
+

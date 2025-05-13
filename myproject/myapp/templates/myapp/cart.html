@@ -4,74 +4,82 @@
 {% block title %}Your Cart - Care Every Home{% endblock %}
 
 {% block content %}
-  <div class="container mx-auto px-4 py-8">
-    <!-- Cart Header -->
-    <div class="relative text-center my-10">
-      <h1 class="text-4xl md:text-5xl font-extrabold text-[#000000] rounded-lg py-4 px-8 inline-block shadow-lg transform transition-all duration-300 hover:shadow-2xl hover:scale-105 animate-fade-in">
-        Your Cart
-        <span class="block w-24 h-1 bg-[#009aa6] mx-auto mt-3 rounded-full"></span>
-      </h1>
-    </div>
+<div class="container mx-auto px-4 py-8">
+  <!-- Cart Header -->
+  <div class="relative text-center my-10">
+    <h1 class="text-4xl md:text-5xl font-extrabold text-[#000000] rounded-lg py-4 px-8 inline-block shadow-lg transform transition-all duration-300 hover:shadow-2xl hover:scale-105 animate-fade-in">
+      Your Cart
+      <span class="block w-24 h-1 bg-[#009aa6] mx-auto mt-3 rounded-full"></span>
+    </h1>
+  </div>
 
-    <!-- Cart Items -->
-    <section class="mt-10">
-      {% if cart_items %}
-        <div class="grid grid-cols-1 gap-6">
-          {% for item in cart_items %}
-            <div class="flex flex-col sm:flex-row items-center bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300">
-              {% if item.product.image %}
+  <!-- Cart Items -->
+  <section class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-10">
+    {% if cart_items %}
+      {% for item in cart_items %}
+        <div class="block bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 flex flex-col relative">
+
+          <!-- Remove from Cart (Font Awesome) -->
+          <form action="{% url 'toggle_cart' item.product.pk %}" method="post" class="absolute top-2 right-2">
+            {% csrf_token %}
+            <button type="submit" class="focus:outline-none text-red-500 hover:text-red-700 transition-colors duration-200">
+              <i class="fas fa-trash-alt text-lg"></i>
+            </button>
+          </form>
+
+          <a href="{% url 'product_detail' item.product.pk %}" class="flex flex-col flex-grow">
+            <!-- Product Image -->
+            {% if item.product.image %}
+              <div class="aspect-w-1 aspect-h-1 w-full mb-4">
                 <img 
                   src="{{ item.product.image.url }}" 
                   alt="{{ item.product.name }}" 
-                  class="w-full sm:w-32 h-32 object-cover rounded-lg mb-4 sm:mb-0 sm:mr-6"
+                  class="w-full h-full object-cover rounded-lg"
                 />
-              {% else %}
-                <div class="w-full sm:w-32 h-32 bg-gray-100 rounded-lg mb-4 sm:mb-0 sm:mr-6 flex items-center justify-center">
-                  <span class="text-gray-500">No Image</span>
-                </div>
-              {% endif %}
-              <div class="flex-grow">
-                <h3 class="text-lg font-extrabold text-[#155c94]">{{ item.product.name }}</h3>
-                <p class="text-[#000000] font-medium">฿{{ item.product.monthly_rate }}/month</p>
-                <p class="text-[#009aa6] text-sm">Stock: {{ item.product.stock }}</p>
               </div>
-              <div class="flex space-x-4 mt-4 sm:mt-0">
-                <!-- Rent Now Button -->
-                <a 
-                  href="{% url 'rent_product' item.product.pk %}" 
-                  class="bg-[#29AB87] text-white py-2 px-4 rounded-lg hover:bg-[#23CB371] transition-all duration-300"
-                >
-                  Rent Now
-                </a>
-                <!-- Remove from Cart Button -->
-                <form action="{% url 'toggle_cart' item.product.pk %}" method="post">
-                  {% csrf_token %}
-                  <button 
-                    type="submit" 
-                    class="bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 transition-all duration-300"
-                  >
-                    Remove
-                  </button>
-                </form>
+            {% else %}
+              <div class="w-full h-48 bg-gray-100 rounded-lg mb-4 flex items-center justify-center">
+                <span class="text-gray-500">No Image</span>
               </div>
-            </div>
-          {% endfor %}
-        </div>
-      {% else %}
-        <div class="text-center text-gray-600 py-10">
-          <p class="text-lg">Your cart is empty.</p>
-          <p class="text-sm">Browse our <a href="{% url 'product_list' %}" class="text-[#009aa6] hover:underline">products</a> to add items.</p>
-        </div>
-      {% endif %}
-    </section>
-  </div>
+            {% endif %}
 
+            <!-- Product Info -->
+            <div class="relative mb-3">
+              <h3 class="text-lg font-extrabold text-[#155c94] hover:text-[#003b6f] transition-colors duration-200 leading-tight bg-gradient-to-r from-[#009aa6]/10 to-transparent pr-2 rounded-lg">
+                {{ item.product.name|truncatechars:30 }}
+              </h3>
+            </div>
+            <p class="text-[#000000] font-medium mb-1">฿{{ item.product.monthly_rate }}/month</p>
+            <p class="text-[#009aa6] text-sm mb-1">Stock: {{ item.product.stock }}</p>
+
+            <!-- Rent Now Button -->
+            <span 
+              class="mt-3 inline-block bg-[#29AB87] text-white py-2 px-4 rounded-lg hover:bg-[#23CB37] transition-all duration-300 text-center"
+            >
+              Rent Now
+            </span>
+          </a>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="col-span-full text-center text-gray-600 py-10">
+        <p class="text-lg">Your cart is empty.</p>
+        <p class="text-sm">Browse our <a href="{% url 'product_list' %}" class="text-[#009aa6] hover:underline">products</a> to add items.</p>
+      </div>
+    {% endif %}
+  </section>
+</div>
+
+<!-- Font Awesome (only needed once if not already in base.html) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<!-- Fade-in Animation -->
 <style>
   @keyframes fadeIn {
     0% { opacity: 0; transform: translateY(20px); }
     100% { opacity: 1; transform: translateY(0); }
   }
-  
+
   .animate-fade-in {
     animation: fadeIn 1s ease-out forwards;
   }

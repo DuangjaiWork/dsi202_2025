@@ -1,4 +1,3 @@
-<!-- myapp/templates/myapp/base.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,11 +21,11 @@
 </head>
 <body class="bg-gray-100">
     <!-- Header with Navigation -->
-    <header class="bg-[#fefefe] text-white p-4 shadow sticky top-0 z-50">
+    <header class="bg-[#fefefe] text-white p-3 shadow sticky top-0 z-50">
         <div class="container mx-auto flex justify-between items-center">
             <!-- Logo -->
             <a href="{% url 'home' %}" class="flex items-center space-x-3">
-                <img src="/media/products/Logo.png" alt="Care Every Home Logo" class="h-20">
+                <img src="/media/products/Logo.png" alt="Care Every Home Logo" class="h-16">
                 <span class="text-2xl font-bold text-[#155c94]">Care Every Home</span>
             </a>
             
@@ -36,48 +35,56 @@
             </button>
 
             <!-- Navigation Menu -->
-            <nav id="nav-menu" class="hidden md:flex md:items-center absolute md:static top-24 left-0 w-full bg-[#fefefe] shadow-md md:shadow-none p-4 md:p-0 transform -translate-y-full md:transform-none transition-transform duration-500 ease-in-out" aria-labelledby="hamburger-btn">
-                <ul class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 md:justify-end items-center md:items-start w-full">
+            <nav id="nav-menu" class="hidden md:flex md:items-center absolute md:static top-20 left-0 w-full bg-[#fefefe] shadow-md md:shadow-none p-4 md:p-0 transform -translate-y-full md:transform-none transition-transform duration-500 ease-in-out" aria-labelledby="hamburger-btn">
+                <ul class="flex flex-col md:flex-row space-y-3 md:space-y-0 md:space-x-2 md:justify-end items-center w-full">
                     <li>
-                        <a href="{% url 'home' %}" class="text-black hover:text-[#155c94] transition duration-300">
-                            Home
+                        <a href="{% url 'home' %}" 
+                        class="text-black hover:text-[#155c94] px-4 py-2 rounded-md text-lg font-semibold flex items-center">
+                        Home
                         </a>
                     </li>
                     <li>
-                        <a href="{% url 'product_list' %}" class="text-black hover:text-[#155c94] transition duration-300">
-                            Products
+                        <a href="{% url 'product_list' %}" 
+                        class="text-black hover:text-[#155c94] px-4 py-2 rounded-md text-lg font-semibold flex items-center">
+                        Products
                         </a>
                     </li>
                     {% if user.is_authenticated %}
                         <li>
-                            <a href="{% url 'favorite_list' %}" class="text-[#bb1615] hover:text-[#ff8da1] transition duration-300 flex items-center text-3xl">
-                                <i class="fas fa-heart mr-2 text-4xl"></i>
+                            <a href="{% url 'favorite_list' %}" 
+                            class="text-[#bb1615] hover:text-[#ff8da1] text-2xl px-4 py-2 flex items-center" title="Favorites">
+                                <i class="fas fa-heart mr-2 text-3xl"></i>
                             </a>                          
                         </li>
                         <li>
-                            <a href="{% url 'cart_list' %}" class="text-[#009aa6] hover:text-[#4db8a4] transition duration-300 flex items-center text-3xl">
-                                <i class="fas fa-shopping-cart mr-2 text-4xl"></i>
+                            <a href="{% url 'cart_list' %}" 
+                            class="text-[#009aa6] hover:text-[#4db8a4] text-2xl px-4 py-2 flex items-center" title="Cart">
+                                <i class="fas fa-shopping-cart mr-2 text-3xl"></i>
                             </a>
                         </li>
                         <li>
-                            <a href="{% url 'user_profile' %}" class="bg-[#4db8a4] hover:bg-[#155c94] text-white px-4 py-2 rounded-xl transition duration-300">
-                                Profile
+                            <a href="{% url 'user_profile' %}" 
+                            class="text-[#155c94] hover:text-[#286a9e] text-2xl px-4 py-2 flex items-center">
+                                <i class="fa-solid fa-user mr-2 text-3xl"></i>
                             </a>
                         </li>
                         <li>
-                            <a href="{% url 'dashboard' %}" class="bg-[#4db8a4] hover:bg-[#155c94] text-white px-4 py-2 rounded-xl transition duration-300">
-                                Dashboard
+                            <a href="{% url 'dashboard' %}" 
+                            class="text-[#bb1615] hover:text-[#ff8da1] text-2xl px-4 py-2 flex items-center">
+                                <i class="fa-solid fa-chart-line mr-2 text-3xl"></i>
                             </a>
                         </li>
                         <li>
-                            <a href="{% url 'account_logout' %}" class="bg-[#4db8a4] hover:bg-[#155c94] text-white px-4 py-2 rounded-xl transition duration-300">
-                            Log out
+                            <a href="{% url 'account_logout' %}" 
+                            class="text-[#4db8a4] hover:text-[#155c94] text-2xl px-4 py-2 flex items-center" title="Log out">
+                                <i class="fas fa-sign-out-alt mr-2 text-3xl"></i>
                             </a>
                         </li>
                     {% else %}
                         <li>
-                            <a href="{% url 'account_login' %}" class="bg-[#4db8a4] hover:bg-[#155c94] text-white px-4 py-2 rounded-xl transition duration-300">
-                                Log in
+                            <a href="{% url 'account_login' %}" 
+                            class="text-[#4db8a4] hover:text-[#155c94] text-2xl px-4 py-2 flex items-center" title="Log in">
+                                <i class="fas fa-sign-in-alt mr-2 text-3xl"></i>
                             </a>
                         </li>
                     {% endif %}
