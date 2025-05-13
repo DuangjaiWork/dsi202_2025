@@ -45,3 +45,14 @@ Users want to share their experience by providing feedback, whether it’s about
 ## As a User, I want to donate medical equipment so that I can help those in need and improve access to healthcare.
 ![Image](https://github.com/user-attachments/assets/bf0b1d0e-cc50-416e-b28c-2ece83ec9a0f)
 ## As a User, I want to give feedback so that I can help improve the service and share my experience.
+![Image](https://github.com/user-attachments/assets/7fba875d-3192-444e-b830-420ce594c4f1)
+
+# Setup
+```bash
+git clone 
+cp -pr ./_template/ ./week02/
+cd week02
+docker stop django_project
+docker rm django_project
+docker-compose up --build
+```
