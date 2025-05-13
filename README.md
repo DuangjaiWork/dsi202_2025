@@ -48,11 +48,16 @@ Users want to share their experience by providing feedback, whether it’s about
 ![Image](https://github.com/user-attachments/assets/7fba875d-3192-444e-b830-420ce594c4f1)
 
 # Setup
+## Docker Desktop Terminal
 ```bash
-git clone 
-cp -pr ./_template/ ./week02/
-cd week02
-docker stop django_project
-docker rm django_project
+git clone https://github.com/DuangjaiWork/dsi202_2025.git
+cd dsi202_2025
+code .
+```
+## Docker command in VS Code
+```bash
 docker-compose up --build
 ```
+## Accessing the Web App
+http://localhost:8000/ (Home page)
+http://localhost:8000/admin/ (Admin page)
