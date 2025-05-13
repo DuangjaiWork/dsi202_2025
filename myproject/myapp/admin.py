@@ -1,12 +1,12 @@
 # myapp/admin.py
 from django.contrib import admin
-from .models import Product, Rental, Donation, Category, Favorite, Cart, UserProfile, Review, ReviewLike
+from .models import Product, Rental, Donation, Category, Favorite, Cart, UserProfile, Review, ReviewLike, Report
 
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'name', 'last_name', 'user_type')
+    list_display = ('user', 'name', 'last_name', 'phone_number', 'user_type')  # Added phone_number
     list_filter = ('user_type',)
-    search_fields = ('user__username', 'name', 'last_name')
+    search_fields = ('user__username', 'name', 'last_name', 'phone_number')
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
@@ -55,3 +55,10 @@ class ReviewLikeAdmin(admin.ModelAdmin):
     list_display = ('user', 'review', 'created_at')
     list_filter = ('created_at',)
     search_fields = ('user__username', 'review__content')
+
+@admin.register(Report)
+class ReportAdmin(admin.ModelAdmin):
+    list_display = ('user', 'subject', 'rental', 'status', 'created_at')
+    list_filter = ('status', 'created_at')
+    search_fields = ('user__username', 'subject', 'description', 'rental__product__name')
+    list_editable = ('status',)

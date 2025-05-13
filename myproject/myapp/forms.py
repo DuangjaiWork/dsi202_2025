@@ -1,6 +1,7 @@
 # myapp/forms.py
 from django import forms
-from .models import Rental, UserProfile, Donation, Review, USER_TYPE_CHOICES
+from .models import Rental, UserProfile, Donation, Review, USER_TYPE_CHOICES, Report
+import re
 
 class RentalForm(forms.ModelForm):
     rental_months = forms.ChoiceField(
@@ -18,13 +19,22 @@ class RentalForm(forms.ModelForm):
 class UserProfileForm(forms.ModelForm):
     class Meta:
         model = UserProfile
-        fields = ['name', 'last_name', 'address', 'user_type']
+        fields = ['name', 'last_name', 'address', 'phone_number', 'user_type']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'w-full p-3 border border-[#009aa6] rounded-lg'}),
             'last_name': forms.TextInput(attrs={'class': 'w-full p-3 border border-[#009aa6] rounded-lg'}),
             'address': forms.Textarea(attrs={'rows': 4, 'class': 'w-full p-3 border border-[#009aa6] rounded-lg'}),
+            'phone_number': forms.TextInput(attrs={'class': 'w-full p-3 border border-[#009aa6] rounded-lg', 'type': 'tel', 'placeholder': '+6634567890'}),
             'user_type': forms.Select(choices=USER_TYPE_CHOICES, attrs={'class': 'w-full p-3 border border-[#009aa6] rounded-lg'}),
         }
+
+    def clean_phone_number(self):
+        phone_number = self.cleaned_data.get('phone_number')
+        if phone_number:
+            # Example: Must start with "+" and have 10-15 digits
+            if not re.match(r'^\+\d{10,15}$', phone_number):
+                raise forms.ValidationError("Phone number must start with '+' and contain 10-15 digits.")
+        return phone_number
 
 class DonationForm(forms.ModelForm):
     class Meta:
@@ -43,4 +53,14 @@ class ReviewForm(forms.ModelForm):
         widgets = {
             'content': forms.Textarea(attrs={'rows': 4, 'class': 'w-full p-3 border border-[#009aa6] rounded-lg'}),
             'rating': forms.Select(choices=[(i, f"{i} Star{'s' if i > 1 else ''}") for i in range(1, 6)], attrs={'class': 'w-full p-3 border border-[#009aa6] rounded-lg'}),
+        }
+
+class ReportForm(forms.ModelForm):
+    class Meta:
+        model = Report
+        fields = ['subject', 'description', 'image']
+        widgets = {
+            'subject': forms.TextInput(attrs={'class': 'w-full p-3 border border-[#009aa6] rounded-lg'}),
+            'description': forms.Textarea(attrs={'rows': 4, 'class': 'w-full p-3 border border-[#009aa6] rounded-lg'}),
+            'image': forms.ClearableFileInput(attrs={'accept': 'image/*', 'class': 'w-full p-3 border border-[#009aa6] rounded-lg'}),
         }

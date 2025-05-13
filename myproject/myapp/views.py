@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, DetailView, CreateView
 from .models import Product, Rental, Category, Favorite, Cart, UserProfile, Donation, Review, ReviewLike
 from django.db.models import Q, Sum
-from .forms import RentalForm, UserProfileForm, DonationForm, ReviewForm
+from .forms import RentalForm, UserProfileForm, DonationForm, ReviewForm, ReportForm
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from rest_framework import generics
@@ -181,27 +181,27 @@ class ProductRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
-def dashboard(request):
-    total_products = Product.objects.count()
-    available_products = Product.objects.filter(is_available=True).count()
-    unavailable_products = total_products - available_products
-    total_rentals = Rental.objects.count()
-    total_revenue = Rental.objects.filter(status='returned').aggregate(total=Sum('total_fee'))['total'] or 0.00
-    recent_rentals = Rental.objects.order_by('-start_date')[:5]
-    total_stock = Product.objects.aggregate(total=Sum('stock'))['total'] or 0
-    category_count = Category.objects.count()
+# def dashboard(request):
+#     total_products = Product.objects.count()
+#     available_products = Product.objects.filter(is_available=True).count()
+#     unavailable_products = total_products - available_products
+#     total_rentals = Rental.objects.count()
+#     total_revenue = Rental.objects.filter(status='returned').aggregate(total=Sum('total_fee'))['total'] or 0.00
+#     recent_rentals = Rental.objects.order_by('-start_date')[:5]
+#     total_stock = Product.objects.aggregate(total=Sum('stock'))['total'] or 0
+#     category_count = Category.objects.count()
 
-    context = {
-        'total_products': total_products,
-        'available_products': available_products,
-        'unavailable_products': unavailable_products,
-        'total_rentals': total_rentals,
-        'total_revenue': total_revenue,
-        'recent_rentals': recent_rentals,
-        'total_stock': total_stock,
-        'category_count': category_count,
-    }
-    return render(request, 'myapp/dashboard.html', context)
+#     context = {
+#         'total_products': total_products,
+#         'available_products': available_products,
+#         'unavailable_products': unavailable_products,
+#         'total_rentals': total_rentals,
+#         'total_revenue': total_revenue,
+#         'recent_rentals': recent_rentals,
+#         'total_stock': total_stock,
+#         'category_count': category_count,
+#     }
+#     return render(request, 'myapp/dashboard.html', context)
 
 @login_required
 def user_profile(request):
@@ -261,5 +261,26 @@ def submit_review(request, rental_id):
     return render(request, 'myapp/submit_review.html', {
         'form': form,
         'product': product,
+    })
+
+@login_required
+def submit_report(request, rental_id):
+    rental = get_object_or_404(Rental, id=rental_id, user=request.user)
+    
+    if request.method == 'POST':
+        form = ReportForm(request.POST, request.FILES)
+        if form.is_valid():
+            report = form.save(commit=False)
+            report.user = request.user
+            report.rental = rental
+            report.save()
+            messages.success(request, "Issue reported successfully!")
+            return redirect('user_profile')
+    else:
+        form = ReportForm()
+
+    return render(request, 'myapp/report.html', {
+        'form': form,
+        'rental': rental,
     })
 

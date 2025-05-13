@@ -16,6 +16,7 @@ class UserProfile(models.Model):
     name = models.CharField(max_length=100, blank=True)
     last_name = models.CharField(max_length=100, blank=True)
     address = models.TextField(blank=True)
+    phone_number = models.CharField(max_length=15, blank=True)  # New field
     user_type = models.CharField(max_length=10, choices=USER_TYPE_CHOICES, default='renter')
 
     def __str__(self):
@@ -163,3 +164,26 @@ class Donation(models.Model):
 
     def __str__(self):
         return f"{self.user.username} donated {self.product_name}"
+
+class Report(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    rental = models.ForeignKey(Rental, on_delete=models.CASCADE, related_name='reports')
+    subject = models.CharField(max_length=255)
+    description = models.TextField()
+    image = models.ImageField(upload_to='reports/', blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(
+        max_length=20,
+        choices=[
+            ('submitted', 'Submitted'),
+            ('in_progress', 'In Progress'),
+            ('resolved', 'Resolved'),
+        ],
+        default='submitted'
+    )
+
+    def __str__(self):
+        return f"{self.user.username} - {self.subject} for Rental {self.rental.id}"
+
+    class Meta:
+        ordering = ['-created_at']

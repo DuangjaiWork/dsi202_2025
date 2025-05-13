@@ -40,13 +40,13 @@
                     <li>
                         <a href="{% url 'home' %}" 
                         class="text-black hover:text-[#155c94] px-4 py-2 rounded-md text-lg font-semibold flex items-center">
-                        Home
+                            Home
                         </a>
                     </li>
                     <li>
                         <a href="{% url 'product_list' %}" 
                         class="text-black hover:text-[#155c94] px-4 py-2 rounded-md text-lg font-semibold flex items-center">
-                        Products
+                            Products
                         </a>
                     </li>
                     {% if user.is_authenticated %}
@@ -54,30 +54,28 @@
                             <a href="{% url 'favorite_list' %}" 
                             class="text-[#bb1615] hover:text-[#ff8da1] text-2xl px-4 py-2 flex items-center" title="Favorites">
                                 <i class="fas fa-heart mr-2 text-3xl"></i>
+                                <span class="text-lg font-semibold md:hidden">Favorite</span>
                             </a>                          
                         </li>
                         <li>
                             <a href="{% url 'cart_list' %}" 
                             class="text-[#009aa6] hover:text-[#4db8a4] text-2xl px-4 py-2 flex items-center" title="Cart">
                                 <i class="fas fa-shopping-cart mr-2 text-3xl"></i>
+                                <span class="text-lg font-semibold md:hidden">Cart</span>
                             </a>
                         </li>
                         <li>
                             <a href="{% url 'user_profile' %}" 
                             class="text-[#155c94] hover:text-[#286a9e] text-2xl px-4 py-2 flex items-center">
                                 <i class="fa-solid fa-user mr-2 text-3xl"></i>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{% url 'dashboard' %}" 
-                            class="text-[#bb1615] hover:text-[#ff8da1] text-2xl px-4 py-2 flex items-center">
-                                <i class="fa-solid fa-chart-line mr-2 text-3xl"></i>
+                                <span class="text-lg font-semibold md:hidden">Profile</span>
                             </a>
                         </li>
                         <li>
                             <a href="{% url 'account_logout' %}" 
                             class="text-[#4db8a4] hover:text-[#155c94] text-2xl px-4 py-2 flex items-center" title="Log out">
                                 <i class="fas fa-sign-out-alt mr-2 text-3xl"></i>
+                                <span class="text-lg font-semibold md:hidden">Log out</span>
                             </a>
                         </li>
                     {% else %}
@@ -85,6 +83,7 @@
                             <a href="{% url 'account_login' %}" 
                             class="text-[#4db8a4] hover:text-[#155c94] text-2xl px-4 py-2 flex items-center" title="Log in">
                                 <i class="fas fa-sign-in-alt mr-2 text-3xl"></i>
+                                <span class="text-lg font-semibold md:hidden">Log in</span>
                             </a>
                         </li>
                     {% endif %}
@@ -100,11 +99,55 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-[#1f2937] text-white p-4">
-        <div class="container mx-auto text-center">
-            <p>© 2025 Care Every Home. All rights reserved.</p>
+    <footer class="bg-[#1f2937] text-white py-8">
+    <div class="container mx-auto px-6 md:px-20 grid grid-cols-1 md:grid-cols-4 gap-10">
+        
+        <!-- Logo & Description -->
+        <div>
+            <a href="{% url 'home' %}" class="flex items-center mb-4 space-x-3">
+                <img src="/media/products/Logo.png" alt="Care Every Home Logo" class="h-12">
+                <span class="text-xl font-bold">Care Every Home</span>
+            </a>
+            <p class="text-sm text-gray-300">Affordable home equipment rentals and heartfelt support—because every home deserves care.</p>
         </div>
+
+        <!-- Quick Links -->
+        <div>
+            <h3 class="text-lg font-semibold mb-3">Quick Links</h3>
+            <ul class="space-y-2 text-sm text-gray-300">
+                <li><a href="{% url 'home' %}" class="hover:text-white">Home</a></li>
+                <li><a href="{% url 'product_list' %}" class="hover:text-white">Products</a></li>
+                <li><a href="#faq" class="hover:text-white">FAQ</a></li>
+                <li><a href="#newsletter" class="hover:text-white">Subscribe</a></li>
+            </ul>
+        </div>
+
+        <!-- Contact Info -->
+        <div>
+            <h3 class="text-lg font-semibold mb-3">Contact Us</h3>
+            <ul class="space-y-2 text-sm text-gray-300">
+                <li><i class="fas fa-envelope mr-2"></i> support@careeveryhome.com</li>
+                <li><i class="fas fa-phone-alt mr-2"></i> +66 91 666 8899</li>
+                <li><i class="fas fa-map-marker-alt mr-2"></i> Pathumthani, Thailand</li>
+            </ul>
+        </div>
+
+        <!-- Social & Newsletter -->
+        <div>
+            <h3 class="text-lg font-semibold mb-3">Follow Us</h3>
+            <div class="flex space-x-4 mb-4">
+                <a href="#" class="hover:text-[#4db8a4]"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" class="hover:text-[#4db8a4]"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="hover:text-[#4db8a4]"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-5 text-center text-sm text-gray-400 border-t border-gray-700 pt-6">
+        © 2025 Care Every Home. All rights reserved.
+    </div>
     </footer>
+
 
     <!-- JavaScript for Hamburger Menu Toggle -->
     <script>

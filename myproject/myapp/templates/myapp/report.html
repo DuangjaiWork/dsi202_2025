@@ -1,0 +1,42 @@
+{% extends 'myapp/base.html' %}
+
+{% block title %}Report Issue - Care Every Home{% endblock %}
+
+{% block content %}
+<div class="container mx-auto p-6 max-w-2xl">
+    <h2 class="text-2xl font-bold text-[#155c94] mb-6 border-b-2 border-[#4db8a4] pb-2 text-center">
+        <i class="fas fa-exclamation-triangle mr-2 text-[#4db8a4]"></i>
+        Report Issue for {{ rental.product.name }}
+    </h2>
+
+    <div class="bg-white p-6 rounded-lg shadow">
+        <form method="POST" enctype="multipart/form-data" class="space-y-4">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="flex gap-4">
+                <button type="submit"
+                        class="flex items-center justify-center gap-2 bg-[#4db8a4] hover:bg-[#155c94] text-white px-4 py-2 rounded-lg transition duration-300 w-full font-semibold">
+                    <i class="fas fa-paper-plane"></i>
+                    Submit Report
+                </button>
+                <a href="{% url 'user_profile' %}"
+                   class="flex items-center justify-center gap-2 bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition duration-300 w-full font-semibold">
+                    <i class="fas fa-arrow-left"></i>
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Display Messages -->
+    {% if messages %}
+        <div class="mt-4">
+            {% for message in messages %}
+                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -59,6 +59,78 @@
     </div>
 </div>
 
+<!-- FAQ Section -->
+<div class="bg-[#eafafa] py-16">
+    <div class="container mx-auto px-6 md:px-20">
+        <h2 class="text-3xl md:text-4xl font-bold text-[#1a3c5e] text-center mb-10">Frequently Asked Questions</h2>
+        <div class="max-w-3xl mx-auto space-y-4">
+
+            <!-- Question 1 -->
+            <details class="bg-white p-5 rounded-xl shadow-md group open:ring-2 open:ring-[#009aa6] transition duration-300 ease-in-out">
+                <summary class="font-semibold text-[#1a3c5e] cursor-pointer text-lg">
+                    How do I rent equipment?
+                </summary>
+                <p class="mt-2 text-[#5b7fa0]">
+                    Simply browse our product list, choose the equipment you need, and book it online. We'll handle the delivery and setup.
+                </p>
+            </details>
+
+            <!-- Question 2 -->
+            <details class="bg-white p-5 rounded-xl shadow-md group open:ring-2 open:ring-[#009aa6] transition duration-300 ease-in-out">
+                <summary class="font-semibold text-[#1a3c5e] cursor-pointer text-lg">
+                    What areas do you serve?
+                </summary>
+                <p class="mt-2 text-[#5b7fa0]">
+                    We currently provide services across 2 cities in Thailand including Bangkok and Pathumthani
+                </p>
+            </details>
+
+            <!-- Question 3 -->
+            <details class="bg-white p-5 rounded-xl shadow-md group open:ring-2 open:ring-[#009aa6] transition duration-300 ease-in-out">
+                <summary class="font-semibold text-[#1a3c5e] cursor-pointer text-lg">
+                    Can I donate my old equipment?
+                </summary>
+                <p class="mt-2 text-[#5b7fa0]">
+                    Yes! We welcome donations. Contact us through our "Donate" section, and we’ll arrange pickup for qualifying items.
+                </p>
+            </details>
+
+            <!-- Question 4 -->
+            <details class="bg-white p-5 rounded-xl shadow-md group open:ring-2 open:ring-[#009aa6] transition duration-300 ease-in-out">
+                <summary class="font-semibold text-[#1a3c5e] cursor-pointer text-lg">
+                    Is there a deposit required?
+                </summary>
+                <p class="mt-2 text-[#5b7fa0]">
+                    For some equipment, a refundable deposit may be required. Details will be shown during the checkout process.
+                </p>
+            </details>
+
+        </div>
+    </div>
+</div>
+
+<!-- Newsletter Sign-Up Section -->
+<div class="bg-white py-16">
+    <div class="container mx-auto px-6 md:px-20 text-center">
+        <h2 class="text-3xl md:text-4xl font-bold text-[#1a3c5e] mb-8">Stay Connected</h2>
+        <p class="text-[#5b7fa0] text-lg mb-8">Subscribe to get updates on new equipment, special offers, and home care tips.</p>
+        
+        <form method="post" action="#" class="max-w-xl mx-auto flex flex-col sm:flex-row items-center gap-4">
+            {% csrf_token %}
+            <input type="email" name="email" placeholder="Enter your email" required
+                class="flex-1 px-5 py-3 border border-[#c0e8ee] rounded-full text-[#1a3c5e] focus:outline-none focus:ring-2 focus:ring-[#009aa6] transition">
+            <button type="submit"
+                class="bg-[#009aa6] hover:bg-[#00788a] text-white font-semibold px-6 py-3 rounded-full transition duration-300 ease-in-out shadow-md">
+                Subscribe
+            </button>
+        </form>
+
+        <!-- Optional success message -->
+        <p class="mt-4 text-green-600">Thank you for subscribing!</p>
+    </div>
+</div>
+
+
 
 <!-- Optional: Add animation styles -->
 <style>

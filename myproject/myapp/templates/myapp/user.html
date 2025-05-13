@@ -14,7 +14,26 @@
             </h2>
             <form method="POST" class="space-y-4">
                 {% csrf_token %}
-                {{ profile_form.as_p }}
+                <div>
+                    <label for="{{ profile_form.name.id_for_label }}" class="block text-sm font-medium text-gray-700">First Name</label>
+                    {{ profile_form.name }}
+                </div>
+                <div>
+                    <label for="{{ profile_form.last_name.id_for_label }}" class="block text-sm font-medium text-gray-700">Last Name</label>
+                    {{ profile_form.last_name }}
+                </div>
+                <div>
+                    <label for="{{ profile_form.phone_number.id_for_label }}" class="block text-sm font-medium text-gray-700">Phone Number</label>
+                    {{ profile_form.phone_number }}
+                </div>
+                <div>
+                    <label for="{{ profile_form.address.id_for_label }}" class="block text-sm font-medium text-gray-700">Address</label>
+                    {{ profile_form.address }}
+                </div>
+                <div>
+                    <label for="{{ profile_form.user_type.id_for_label }}" class="block text-sm font-medium text-gray-700">User Type</label>
+                    {{ profile_form.user_type }}
+                </div>
                 <button type="submit"
                         class="flex items-center justify-center gap-2 bg-[#4db8a4] hover:bg-[#155c94] text-white px-4 py-2 rounded-lg transition duration-300 w-full font-semibold">
                     <i class="fas fa-save"></i>
@@ -22,7 +41,6 @@
                 </button>
             </form>
         </div>
-
 
         <!-- Conditional Second Section (Donater Only) -->
         {% if user_profile.user_type == 'donater' %}
@@ -35,7 +53,6 @@
                     <i class="fas fa-gift"></i>
                     Submit Donation
                 </button>
-
             </form>
         {% endif %}
     </div>
@@ -62,7 +79,6 @@
                                     </div>
                                 {% endif %}
                             </div>
-
 
                             <!-- Donation Info -->
                             <div class="flex-1">
@@ -138,33 +154,43 @@
                                         <p><span class="font-bold text-gray-600">Total Fee:</span> <span class="text-[#009aa6] font-bold">฿{{ rental.total_fee }}</span></p>
                                     </div>
 
-                                    <!-- Pay Button -->
-                                    {% if rental.status == 'ongoing' %}
-                                        <form action="{% url 'mark_payment' rental.id %}" method="post" class="inline-block mt-3">
-                                            {% csrf_token %}
-                                            <button type="submit"
-                                                    class="inline-flex items-center gap-2 bg-[#07b897] hover:bg-[#75c7b8] text-white text-sm px-4 py-2 rounded-full shadow transition duration-300">
-                                                <i class="fas fa-credit-card"></i>
-                                                Pay Now
-                                            </button>
-                                        </form>
-                                        {% if rental.needs_payment_reminder %}
-                                            <p class="text-red-500 font-semibold text-xs mt-2">⚠ Monthly payment due!</p>
+                                    <!-- Buttons -->
+                                    <div class="flex flex-wrap gap-3 mt-3">
+                                        <!-- Pay Button -->
+                                        {% if rental.status == 'ongoing' %}
+                                            <form action="{% url 'mark_payment' rental.id %}" method="post" class="inline-block">
+                                                {% csrf_token %}
+                                                <button type="submit"
+                                                        class="inline-flex items-center gap-2 bg-[#07b897] hover:bg-[#75c7b8] text-white text-sm px-4 py-2 rounded-full shadow transition duration-300">
+                                                    <i class="fas fa-credit-card"></i>
+                                                    Pay Now
+                                                </button>
+                                            </form>
+                                            {% if rental.needs_payment_reminder %}
+                                                <p class="text-red-500 font-semibold text-xs mt-2">⚠ Monthly payment due!</p>
+                                            {% endif %}
                                         {% endif %}
-                                    {% endif %}
 
-                                    <!-- Review Button -->
-                                    {% if rental.status in 'ongoing,returned' %}
-                                        <a href="{% url 'submit_review' rental.id %}"
-                                        class="inline-flex items-center gap-2 bg-[#155c94] hover:bg-[#316894] text-white text-sm px-4 py-2 rounded-full shadow transition duration-300 mt-3 ml-2">
-                                            <i class="fas fa-star"></i>
-                                            Write Review
-                                        </a>
-                                    {% endif %}
+                                        <!-- Review Button -->
+                                        {% if rental.status in 'ongoing,returned' %}
+                                            <a href="{% url 'submit_review' rental.id %}"
+                                            class="inline-flex items-center gap-2 bg-[#155c94] hover:bg-[#316894] text-white text-sm px-4 py-2 rounded-full shadow transition duration-300">
+                                                <i class="fas fa-star"></i>
+                                                Review
+                                            </a>
+                                        {% endif %}
 
-
+                                        <!-- Report Issue Button -->
+                                        {% if rental.status in 'preparing,ongoing,returning' %}
+                                            <a href="{% url 'submit_report' rental.id %}"
+                                            class="inline-flex items-center gap-2 bg-[#bb1615] hover:bg-[#ff8da1] text-white text-sm px-4 py-2 rounded-full shadow transition duration-300">
+                                                <i class="fas fa-exclamation-triangle"></i>
+                                                Report Issue
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                </div>
                             </li>
-
                         {% endif %}
                     {% endfor %}
                 </ul>
@@ -181,7 +207,6 @@
                     Browse More Products
                 </a>
             </div>
-
         </div>
     {% endif %}
 </div>
@@ -197,4 +222,3 @@
     </div>
 {% endif %}
 {% endblock %}
-
