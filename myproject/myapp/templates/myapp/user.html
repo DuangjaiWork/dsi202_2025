@@ -7,14 +7,22 @@
     <!-- Sidebar -->
     <div class="w-full md:w-1/3 bg-white p-6 rounded-lg shadow mb-6 md:mb-0 h-full">
         <!-- User Information Section -->
-        <h2 class="text-2xl font-bold mb-4 text-[#155c94]">User Information</h2>
-        <form method="POST" class="space-y-4">
-            {% csrf_token %}
-            {{ profile_form.as_p }}
-            <button type="submit" class="bg-[#4db8a4] hover:bg-[#155c94] text-white px-4 py-2 rounded transition duration-300 w-full">
-                Save Profile
-            </button>
-        </form>
+        <div class="mb-8">
+            <h2 class="text-2xl font-bold mb-4 text-[#155c94] border-l-4 border-[#4db8a4] pl-4">
+                <i class="fas fa-user-circle mr-2 text-[#4db8a4]"></i>
+                User Information
+            </h2>
+            <form method="POST" class="space-y-4">
+                {% csrf_token %}
+                {{ profile_form.as_p }}
+                <button type="submit"
+                        class="flex items-center justify-center gap-2 bg-[#4db8a4] hover:bg-[#155c94] text-white px-4 py-2 rounded-lg transition duration-300 w-full font-semibold">
+                    <i class="fas fa-save"></i>
+                    Save Profile
+                </button>
+            </form>
+        </div>
+
 
         <!-- Conditional Second Section (Donater Only) -->
         {% if user_profile.user_type == 'donater' %}
@@ -22,9 +30,12 @@
             <form method="POST" enctype="multipart/form-data" class="space-y-4">
                 {% csrf_token %}
                 {{ donation_form.as_p }}
-                <button type="submit" class="bg-[#4db8a4] hover:bg-[#155c94] text-white px-4 py-2 rounded transition duration-300 w-full">
+                <button type="submit"
+                        class="flex items-center justify-center gap-2 bg-[#4db8a4] hover:bg-[#155c94] text-white px-4 py-2 rounded-lg transition duration-300 w-full font-semibold">
+                    <i class="fas fa-gift"></i>
                     Submit Donation
                 </button>
+
             </form>
         {% endif %}
     </div>
@@ -33,15 +44,41 @@
     {% if user_profile.user_type == 'donater' %}
         <!-- Donated Products (for Donaters) -->
         <div class="w-full md:w-2/3 bg-white p-6 rounded-lg shadow">
-            <h2 class="text-2xl font-bold mb-4 text-[#155c94]">Donated Products</h2>
+            <h2 class="text-2xl font-bold mb-4 text-[#155c94] border-b-2 border-[#4db8a4] pb-2">
+                <i class="fas fa-hand-holding-heart mr-2 text-[#4db8a4]"></i>
+                Donated Products
+            </h2>
             {% if donations %}
                 <ul class="space-y-4">
                     {% for donation in donations %}
-                        <li class="bg-gray-100 p-4 rounded">
-                            <p><strong>{{ donation.product_name }}</strong></p>
-                            <p>{{ donation.description|truncatewords:30 }}</p>
-                            <p>Status: {% if donation.accepted %}Accepted{% else %}Pending{% endif %}</p>
-                            <p>Submitted: {{ donation.created_at|date:"F d, Y" }}</p>
+                        <li class="bg-gray-50 p-4 rounded-lg flex gap-4 shadow-md">
+                            <!-- Placeholder Image -->
+                            <div class="w-24 h-24 flex-shrink-0 overflow-hidden rounded-lg border border-gray-300">
+                                {% if donation.image %}
+                                    <img src="{{ donation.image.url }}" alt="{{ donation.product_name }}" class="w-full h-full object-cover">
+                                {% else %}
+                                    <div class="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400 text-sm">
+                                        <i class="fas fa-box-open text-2xl"></i>
+                                    </div>
+                                {% endif %}
+                            </div>
+
+
+                            <!-- Donation Info -->
+                            <div class="flex-1">
+                                <h4 class="text-lg font-semibold text-[#155c94] mb-2">{{ donation.product_name }}</h4>
+                                <div class="space-y-1 text-sm text-gray-700">
+                                    <p><span class="font-bold text-gray-600">Description:</span> {{ donation.description|truncatewords:30 }}</p>
+                                    <p><span class="font-bold text-gray-600">Status:</span>
+                                        {% if donation.accepted %}
+                                            <span class="text-green-600 font-semibold">Accepted</span>
+                                        {% else %}
+                                            <span class="text-yellow-600 font-semibold">Pending</span>
+                                        {% endif %}
+                                    </p>
+                                    <p><span class="font-bold text-gray-600">Submitted:</span> {{ donation.created_at|date:"F d, Y" }}</p>
+                                </div>
+                            </div>
                         </li>
                     {% endfor %}
                 </ul>
@@ -49,47 +86,102 @@
                 <p class="text-gray-600">You have not submitted any donations yet.</p>
             {% endif %}
         </div>
+
     {% else %}
         <!-- Currently Renting Products (for Renters) -->
         <div class="w-full md:w-2/3 bg-white p-6 rounded-lg shadow">
-            <h2 class="text-2xl font-bold mb-4 text-[#155c94]">Welcome, {{ user_profile.name }}!</h2>
-            <h3 class="text-xl font-semibold mb-4 text-[#155c94]">Currently Renting Products</h3>
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-[#155c94] border-b-2 border-[#4db8a4] pb-2">
+                    <i class="fas fa-house-user mr-2 text-[#4db8a4]"></i>
+                    Welcome, {{ user_profile.name }}!
+                </h2>
+            </div>
+
+            <!-- Currently Renting Products Heading (no border) -->
+            <div class="mb-4">
+                <h3 class="text-xl font-semibold text-[#155c94]">
+                    <i class="fas fa-box-open mr-2 text-[#4db8a4]"></i>
+                    Currently Renting Products
+                </h3>
+            </div>
             {% if rentals %}
                 <ul class="space-y-4">
                     {% for rental in rentals %}
                         {% if rental.status != 'returned' %}
-                            <li class="bg-gray-100 p-4 rounded">
-                                <p><strong>{{ rental.product.name }}</strong></p>
-                                <p>Start Date: {{ rental.start_date }}</p>
-                                <p>End Date: {{ rental.get_end_date|default:"Ongoing" }}</p>
-                                <p>Remaining Months: {{ rental.remaining_months }}</p>
-                                <p>Status: {{ rental.get_status_display }}</p>
-                                <p>Total Fee: ฿{{ rental.total_fee }}</p>
-                                {% if rental.status == 'ongoing' %}
-                                    <form action="{% url 'mark_payment' rental.id %}" method="post" class="inline">
-                                        {% csrf_token %}
-                                        <button type="submit" class="bg-[#4db8a4] hover:bg-[#155c94] text-white px-4 py-2 rounded transition duration-300">
-                                            Pay
-                                        </button>
-                                    </form>
-                                    {% if rental.needs_payment_reminder %}
-                                        <p class="text-red-500 font-semibold mt-2">Please Pay: Monthly payment due!</p>
+                            <li class="bg-gray-50 p-4 rounded-lg flex gap-4 shadow-md">
+                                <!-- Product Image -->
+                                <div class="w-24 h-24 flex-shrink-0 overflow-hidden rounded-lg border border-gray-300">
+                                    {% if rental.product.image %}
+                                        <img src="{{ rental.product.image.url }}" alt="{{ rental.product.name }}" class="w-full h-full object-cover">
+                                    {% else %}
+                                        <div class="w-full h-full flex items-center justify-center bg-white-200 text-gray-500 text-sm">No Image</div>
                                     {% endif %}
-                                {% endif %}
-                                <!-- Review Button (Conditional) -->
-                                {% if rental.status in 'ongoing,returned' %}
-                                    <a href="{% url 'submit_review' rental.id %}" class="bg-[#155c94] hover:bg-[#4db8a4] text-white px-4 py-2 rounded transition duration-300 inline-block mt-2">
-                                        Review
-                                    </a>
-                                {% endif %}
+                                </div>
+
+                                <!-- Product Info -->
+                                <div class="flex-1">
+                                    <h4 class="text-lg font-semibold text-[#155c94] mb-2">{{ rental.product.name }}</h4>
+                                    <div class="space-y-1 text-sm text-gray-700">
+                                        <p><span class="font-bold text-gray-600">Start Date:</span> {{ rental.start_date }}</p>
+                                        <p><span class="font-bold text-gray-600">End Date:</span> {{ rental.get_end_date|default:"Ongoing" }}</p>
+                                        <p><span class="font-bold text-gray-600">Remaining Months:</span> {{ rental.remaining_months }}</p>
+                                        <p>
+                                            <span class="font-bold text-gray-600">Status:</span>
+                                            <span class="{% if rental.status == 'preparing' %}text-yellow-500
+                                                        {% elif rental.status == 'ongoing' %}text-blue-600
+                                                        {% elif rental.status == 'returning' %}text-purple-600
+                                                        {% elif rental.status == 'returned' %}text-green-600
+                                                        {% else %}text-gray-500{% endif %} font-semibold">
+                                                {{ rental.get_status_display }}
+                                            </span>
+                                        </p>
+                                        <p><span class="font-bold text-gray-600">Total Fee:</span> <span class="text-[#009aa6] font-bold">฿{{ rental.total_fee }}</span></p>
+                                    </div>
+
+                                    <!-- Pay Button -->
+                                    {% if rental.status == 'ongoing' %}
+                                        <form action="{% url 'mark_payment' rental.id %}" method="post" class="inline-block mt-3">
+                                            {% csrf_token %}
+                                            <button type="submit"
+                                                    class="inline-flex items-center gap-2 bg-[#07b897] hover:bg-[#75c7b8] text-white text-sm px-4 py-2 rounded-full shadow transition duration-300">
+                                                <i class="fas fa-credit-card"></i>
+                                                Pay Now
+                                            </button>
+                                        </form>
+                                        {% if rental.needs_payment_reminder %}
+                                            <p class="text-red-500 font-semibold text-xs mt-2">⚠ Monthly payment due!</p>
+                                        {% endif %}
+                                    {% endif %}
+
+                                    <!-- Review Button -->
+                                    {% if rental.status in 'ongoing,returned' %}
+                                        <a href="{% url 'submit_review' rental.id %}"
+                                        class="inline-flex items-center gap-2 bg-[#155c94] hover:bg-[#316894] text-white text-sm px-4 py-2 rounded-full shadow transition duration-300 mt-3 ml-2">
+                                            <i class="fas fa-star"></i>
+                                            Write Review
+                                        </a>
+                                    {% endif %}
+
+
                             </li>
+
                         {% endif %}
                     {% endfor %}
                 </ul>
             {% else %}
                 <p class="text-gray-600">You are not currently renting any products.</p>
             {% endif %}
-            <p class="text-gray-600 mt-4">Browse <a href="{% url 'product_list' %}" class="text-[#4db8a4] hover:underline">products</a> to rent more items.</p>
+            <div class="mt-6 text-center">
+                <p class="text-gray-700 text-sm mb-2">
+                    Looking for more equipment? 
+                </p>
+                <a href="{% url 'product_list' %}" 
+                class="inline-flex items-center gap-2 bg-[#4db8a4] hover:bg-[#155c94] text-white font-medium px-5 py-2 rounded-full transition duration-300 shadow">
+                    <i class="fas fa-search"></i>
+                    Browse More Products
+                </a>
+            </div>
+
         </div>
     {% endif %}
 </div>
@@ -105,3 +197,4 @@
     </div>
 {% endif %}
 {% endblock %}
+
