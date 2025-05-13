@@ -43,4 +43,5 @@ Users want to share their experience by providing feedback, whether it’s about
 ## As a User, I want to rent medical equipment, so that I can use them.
 ![Image](https://github.com/user-attachments/assets/1e8c1430-a6f1-4c6e-b748-fae925e63bc3)
 ## As a User, I want to donate medical equipment so that I can help those in need and improve access to healthcare.
+![Image](https://github.com/user-attachments/assets/bf0b1d0e-cc50-416e-b28c-2ece83ec9a0f)
 ## As a User, I want to give feedback so that I can help improve the service and share my experience.
