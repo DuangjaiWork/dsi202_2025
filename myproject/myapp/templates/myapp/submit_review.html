@@ -5,7 +5,13 @@
 {% block content %}
 <div class="container mx-auto px-4 py-8">
     <div class="bg-white p-6 rounded-lg shadow-lg">
-        <h1 class="text-3xl font-bold text-[#155c94] mb-4">Review {{ product.name }}</h1>
+        <h1 class="text-4xl font-extrabold text-[#155c94] mb-6 flex items-center gap-3">
+            <i class="fas fa-pen-nib text-[#4db8a4] text-3xl"></i>
+            <span class="relative inline-block">
+                Review <span class="text-[#009aa6]">{{ product.name }}</span>
+                <span class="absolute left-0 bottom-[-6px] w-full h-1 bg-[#4db8a4] rounded-full"></span>
+            </span>
+        </h1>
         <form method="post" class="space-y-4">
             {% csrf_token %}
             {{ form.as_p }}
