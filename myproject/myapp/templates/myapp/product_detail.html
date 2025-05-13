@@ -102,7 +102,7 @@
     {% if reviews %}
       <div class="space-y-6">
         {% for review in reviews %}
-          <div class="bg-gray-50 p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
+          <div class="bg-gray-50 p-2 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
             <div class="flex items-start space-x-4">
               <!-- User Avatar -->
               <div class="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
@@ -127,7 +127,7 @@
                       {% endfor %}
                     </div>
                   </div>
-                  <p class="text-gray-500 text-sm">{{ review.created_at|date:"F d, Y" }}</p>
+                  <p class="text-xs text-gray-500">{{ review.created_at|date:"F d, Y" }}</p>
                 </div>
                 <p class="text-gray-700 text-base leading-relaxed mb-4">{{ review.content }}</p>
                 <div class="flex items-center space-x-4">
