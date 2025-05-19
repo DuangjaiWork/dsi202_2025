@@ -65,3 +65,7 @@ http://localhost:8000/admin/ (Admin page)
 
 # Presentation Video:
 https://youtu.be/pNjmrAlzirs
+
+
+Note:
+The QR code payment feature cannot be installed because the Dockerfile version is below 3.10, which prevents the installation of PromptPay and QR code packages listed in requirements.txt.Therefore, a PromptPay QR code is used that requires the customer to enter the payment amount manually.
