@@ -1,0 +1,90 @@
+{% extends 'myapp/base.html' %}
+
+{% block title %}Payment - Care Every Home{% endblock %}
+
+{% block content %}
+{% load static %}
+<div class="container mx-auto p-6 max-w-3xl">
+    <div class="bg-white p-6 rounded-lg shadow">
+        <h2 class="text-2xl font-bold mb-4 text-[#155c94] border-b-2 border-[#4db8a4] pb-2">
+            <i class="fas fa-credit-card mr-2 text-[#4db8a4]"></i>
+            Payment for {{ rental.product.name }}
+        </h2>
+
+        <!-- Payment Details -->
+        <div class="mb-6">
+            <h3 class="text-xl font-semibold text-[#155c94] mb-3">Payment Details</h3>
+            <div class="space-y-2 text-gray-700">
+                <p><span class="font-bold">Product:</span> {{ rental.product.name }}</p>
+                <p><span class="font-bold">Monthly Rate:</span> ฿{{ one_month_fee }}</p>
+                <p><span class="font-bold">Amount to Pay (1 Month):</span> <span class="text-[#009aa6] font-bold">฿{{ one_month_fee }}</span></p>
+                <p><span class="font-bold">Payment Status:</span> 
+                    <span class="{% if rental.payment_status == 'pending' %}text-yellow-500
+                                 {% elif rental.payment_status == 'verified' %}text-green-600
+                                 {% elif rental.payment_status == 'rejected' %}text-red-600
+                                 {% else %}text-gray-500{% endif %} font-semibold">
+                        {{ rental.get_payment_status_display }}
+                    </span>
+                </p>
+            </div>
+        </div>
+
+        <!-- QR Code Section -->
+        <div class="mb-6">
+            <h3 class="text-xl font-semibold text-[#155c94] mb-3">Scan to Pay</h3>
+            <p class="text-gray-600 mb-3">Please scan the QR code below to make a payment of ฿{{ one_month_fee }} for one month. After payment, upload the transfer slip below.</p>
+            <div class="flex justify-center">
+                <img src="/media/payment/QR.jpg" alt="Payment QR Code" class="w-48 h-full border border-gray-300 rounded-lg">
+            </div>
+        </div>
+
+        <!-- Transfer Slip Upload Form -->
+        <div class="mb-6">
+            <h3 class="text-xl font-semibold text-[#155c94] mb-3">Upload Transfer Slip</h3>
+            {% if rental.payment_status == 'pending' or rental.payment_status == 'rejected' %}
+                <form method="POST" enctype="multipart/form-data" class="space-y-4">
+                    {% csrf_token %}
+                    <div>
+                        <label for="{{ form.transfer_slip.id_for_label }}" class="block text-sm font-medium text-gray-700">Transfer Slip Image</label>
+                        {{ form.transfer_slip }}
+                        {% if form.transfer_slip.errors %}
+                            <p class="text-red-500 text-sm mt-1">{{ form.transfer_slip.errors }}</p>
+                        {% endif %}
+                    </div>
+                    <button type="submit" class="flex items-center justify-center gap-2 bg-[#4db8a4] hover:bg-[#155c94] text-white px-4 py-2 rounded-lg transition duration-300 w-full font-semibold">
+                        <i class="fas fa-upload"></i>
+                        Upload Slip
+                    </button>
+                </form>
+            {% else %}
+                <p class="text-green-600 font-semibold">Payment has been verified. No further action required.</p>
+                {% if rental.transfer_slip %}
+                    <div class="mt-4">
+                        <p class="text-gray-700">Uploaded Transfer Slip:</p>
+                        <img src="{{ rental.transfer_slip.url }}" alt="Transfer Slip" class="w-48 h-auto mt-2 border border-gray-300 rounded-lg">
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
+
+        <!-- Back Button -->
+        <div class="text-center">
+            <a href="{% url 'user_profile' %}" class="inline-flex items-center gap-2 bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition duration-300 font-semibold">
+                <i class="fas fa-arrow-left"></i>
+                Back to Profile
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Display Messages -->
+{% if messages %}
+    <div class="container mx-auto mt-4 max-w-3xl">
+        {% for message in messages %}
+            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+{% endblock %}

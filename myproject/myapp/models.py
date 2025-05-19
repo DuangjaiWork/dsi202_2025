@@ -1,4 +1,3 @@
-# myapp/models.py
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.timezone import now
@@ -16,7 +15,7 @@ class UserProfile(models.Model):
     name = models.CharField(max_length=100, blank=True)
     last_name = models.CharField(max_length=100, blank=True)
     address = models.TextField(blank=True)
-    phone_number = models.CharField(max_length=15, blank=True)  # New field
+    phone_number = models.CharField(max_length=15, blank=True)
     user_type = models.CharField(max_length=10, choices=USER_TYPE_CHOICES, default='renter')
 
     def __str__(self):
@@ -50,7 +49,7 @@ class Review(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews')
     content = models.TextField()
-    rating = models.PositiveIntegerField(default=5)  # Simple 1-5 star rating
+    rating = models.PositiveIntegerField(default=5)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -65,7 +64,7 @@ class ReviewLike(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ('user', 'review')  # Prevent multiple likes from the same user
+        unique_together = ('user', 'review')
 
     def __str__(self):
         return f"{self.user.username} likes {self.review}"
@@ -106,11 +105,24 @@ class Rental(models.Model):
     ], default='preparing')
     created_at = models.DateTimeField(auto_now_add=True)
     last_payment_reminder = models.DateTimeField(null=True, blank=True)
+    transfer_slip = models.ImageField(upload_to='transfer_slips/', blank=True, null=True)  # New field
+    payment_status = models.CharField(
+        max_length=20,
+        choices=[
+            ('pending', 'Pending'),
+            ('verified', 'Verified'),
+            ('rejected', 'Rejected'),
+        ],
+        default='pending'
+    )  # New field
 
     def calculate_total_fee(self):
         monthly_rate = self.product.monthly_rate
         total_fee = monthly_rate * Decimal(str(self.rental_months))
         return total_fee.quantize(Decimal('0.01'))
+
+    def get_one_month_fee(self):
+        return self.product.monthly_rate.quantize(Decimal('0.01'))  # New method for one-month payment
 
     def get_end_date(self):
         if not self.start_date:

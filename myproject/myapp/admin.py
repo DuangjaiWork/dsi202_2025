@@ -1,10 +1,9 @@
-# myapp/admin.py
 from django.contrib import admin
 from .models import Product, Rental, Donation, Category, Favorite, Cart, UserProfile, Review, ReviewLike, Report
 
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'name', 'last_name', 'phone_number', 'user_type')  # Added phone_number
+    list_display = ('user', 'name', 'last_name', 'phone_number', 'user_type')
     list_filter = ('user_type',)
     search_fields = ('user__username', 'name', 'last_name', 'phone_number')
 
@@ -33,10 +32,11 @@ class CartAdmin(admin.ModelAdmin):
 
 @admin.register(Rental)
 class RentalAdmin(admin.ModelAdmin):
-    list_display = ('user', 'product', 'start_date', 'rental_months', 'total_fee', 'status', 'created_at')
-    list_filter = ('status', 'start_date')
+    list_display = ('user', 'product', 'start_date', 'rental_months', 'total_fee', 'status', 'payment_status', 'created_at')
+    list_filter = ('status', 'payment_status', 'start_date')
     search_fields = ('user__username', 'product__name')
-    list_editable = ('status',)
+    list_editable = ('status', 'payment_status')
+    readonly_fields = ('transfer_slip',)
 
 @admin.register(Donation)
 class DonationAdmin(admin.ModelAdmin):

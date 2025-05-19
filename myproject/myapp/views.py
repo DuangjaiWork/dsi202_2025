@@ -1,9 +1,8 @@
-# myapp/views.py
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, DetailView, CreateView
 from .models import Product, Rental, Category, Favorite, Cart, UserProfile, Donation, Review, ReviewLike
 from django.db.models import Q, Sum
-from .forms import RentalForm, UserProfileForm, DonationForm, ReviewForm, ReportForm
+from .forms import RentalForm, UserProfileForm, DonationForm, ReviewForm, ReportForm, TransferSlipForm
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from rest_framework import generics
@@ -147,6 +146,29 @@ def mark_payment(request, rental_id):
     return redirect('user_profile')
 
 @login_required
+def payment(request, rental_id):
+    rental = get_object_or_404(Rental, id=rental_id, user=request.user)
+    if rental.status not in ['preparing', 'ongoing']:
+        messages.error(request, "Payment is not available for this rental status.")
+        return redirect('user_profile')
+
+    if request.method == 'POST':
+        form = TransferSlipForm(request.POST, request.FILES, instance=rental)
+        if form.is_valid():
+            form.save()
+            rental.last_payment_reminder = timezone.now()
+            messages.success(request, "Transfer slip uploaded successfully. Awaiting admin verification.")
+            return redirect('user_profile')
+    else:
+        form = TransferSlipForm(instance=rental)
+
+    return render(request, 'myapp/payment.html', {
+        'rental': rental,
+        'form': form,
+        'one_month_fee': rental.get_one_month_fee(),
+    })
+
+@login_required
 def post_review(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     if request.method == 'POST':
@@ -180,28 +202,6 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):
 class ProductRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-
-# def dashboard(request):
-#     total_products = Product.objects.count()
-#     available_products = Product.objects.filter(is_available=True).count()
-#     unavailable_products = total_products - available_products
-#     total_rentals = Rental.objects.count()
-#     total_revenue = Rental.objects.filter(status='returned').aggregate(total=Sum('total_fee'))['total'] or 0.00
-#     recent_rentals = Rental.objects.order_by('-start_date')[:5]
-#     total_stock = Product.objects.aggregate(total=Sum('stock'))['total'] or 0
-#     category_count = Category.objects.count()
-
-#     context = {
-#         'total_products': total_products,
-#         'available_products': available_products,
-#         'unavailable_products': unavailable_products,
-#         'total_rentals': total_rentals,
-#         'total_revenue': total_revenue,
-#         'recent_rentals': recent_rentals,
-#         'total_stock': total_stock,
-#         'category_count': category_count,
-#     }
-#     return render(request, 'myapp/dashboard.html', context)
 
 @login_required
 def user_profile(request):
@@ -283,4 +283,3 @@ def submit_report(request, rental_id):
         'form': form,
         'rental': rental,
     })
-

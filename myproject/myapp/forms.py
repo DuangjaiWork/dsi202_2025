@@ -1,4 +1,3 @@
-# myapp/forms.py
 from django import forms
 from .models import Rental, UserProfile, Donation, Review, USER_TYPE_CHOICES, Report
 import re
@@ -31,7 +30,6 @@ class UserProfileForm(forms.ModelForm):
     def clean_phone_number(self):
         phone_number = self.cleaned_data.get('phone_number')
         if phone_number:
-            # Example: Must start with "+" and have 10-15 digits
             if not re.match(r'^\+\d{10,15}$', phone_number):
                 raise forms.ValidationError("Phone number must start with '+' and contain 10-15 digits.")
         return phone_number
@@ -65,4 +63,13 @@ class ReportForm(forms.ModelForm):
             'image': forms.ClearableFileInput(attrs={'accept': 'image/*', 'class': 'w-full p-3 border border-[#009aa6] rounded-lg'}),
         }
 
-
+class TransferSlipForm(forms.ModelForm):
+    class Meta:
+        model = Rental
+        fields = ['transfer_slip']
+        widgets = {
+            'transfer_slip': forms.ClearableFileInput(attrs={
+                'accept': 'image/*',
+                'class': 'w-full p-3 border border-[#009aa6] rounded-lg'
+            }),
+        }
